@@ -7,15 +7,12 @@ public class Finder {
 	private ArrayList<Item> itemArray = new ArrayList<Item>();
 
 	public Finder() {
-		find("/media/Hitachi/Рефераты");
+		find("E:\\общая");
 		/*for (int i=0; i<itemArray.size(); i++) {
 			System.out.println(itemArray.get(i).nameFile+" "+itemArray.get(i).sizeFile);
 		 }
 		 */
-		compareFile();
-			
-
-		
+		compareFile();	
 	}
 	
 	

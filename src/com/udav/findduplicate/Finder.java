@@ -4,15 +4,23 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class Finder {
-	private ArrayList<Item> itemArray = new ArrayList<Item>();
+	private ArrayList<File> itemArray = new ArrayList<File>();
+	private ArrayList<ArrayList<File>> resultArray = new ArrayList<ArrayList<File>>();
+	
+	private boolean notFirst = false;
 
 	public Finder() {
 		find("E:\\общая");
-		/*for (int i=0; i<itemArray.size(); i++) {
-			System.out.println(itemArray.get(i).nameFile+" "+itemArray.get(i).sizeFile);
-		 }
-		 */
-		compareFile();	
+		compareFiles();	
+		
+		// Вывод дубликатов
+		for (int i=0; i<resultArray.size(); i++) {
+			for (int j=0; j<resultArray.get(i).size(); j++) {
+				System.out.println(resultArray.get(i).get(j).getAbsolutePath());
+			}
+			System.out.println("-------------------------------");
+		}
+		
 	}
 	
 	
@@ -21,7 +29,7 @@ public class Finder {
 		ArrayList<String> tmp = new ArrayList<String>();
 		File fileList[] = new File(path).listFiles();
 		for (int i=0; i<fileList.length; i++) {
-			if (fileList[i].isFile()) itemArray.add(new Item(fileList[i].getName(), fileList[i].getAbsolutePath(), fileList[i].length()));
+			if (fileList[i].isFile()) itemArray.add(fileList[i]);
 			if (fileList[i].isDirectory()) tmp.add(fileList[i].getAbsolutePath());
 		}
 		for (int i=0; i<tmp.size(); i++) {
@@ -29,14 +37,26 @@ public class Finder {
 		}
 	}
 	
-	private void compareFile() {
+	private void compareFiles() {
 		for (int i=0; i<itemArray.size(); i++) {
+			ArrayList<File> duplicateFileArray = new ArrayList<File>();
+			
 			for (int j=0; j<itemArray.size(); j++) {
-				if ((itemArray.get(i).nameFile.equals(itemArray.get(j).nameFile)) 
-						&& (itemArray.get(i).sizeFile == itemArray.get(j).sizeFile) && (j!=i)) {
-					System.out.println(itemArray.get(i).nameFile+" "+itemArray.get(i).pathToFile+"---"+itemArray.get(j).pathToFile);
+				if ((itemArray.get(i).getName().equals(itemArray.get(j).getName()) 
+						&& (itemArray.get(i).length() == itemArray.get(j).length()) 
+						&& (j!=i))) {		
+					if (!notFirst) {
+						duplicateFileArray.add(itemArray.get(i));
+						duplicateFileArray.add(itemArray.get(j));
+						notFirst = true;
+					} else {
+						duplicateFileArray.add(itemArray.get(j));
+					}
 				}
 			}
+			notFirst = false;
+			if (duplicateFileArray.size()>0)
+				resultArray.add(duplicateFileArray);
 		}
 	}
 	

@@ -5,15 +5,14 @@ import java.util.ArrayList;
 
 public class Finder {
 	private ArrayList<File> itemArray = new ArrayList<File>();
-	private ArrayList<ArrayList<File>> resultArray = new ArrayList<ArrayList<File>>();
-	
+	private ArrayList<ArrayList<File>> resultArray = new ArrayList<ArrayList<File>>();	
 	private boolean notFirst = false;
 
-	public Finder() {
-		find("E:\\общая");
+	public Finder(String pathToFolder) {
+		find(pathToFolder);
 		compareFiles();	
 		
-		// Вывод дубликатов
+		// Output duplicates
 		for (int i=0; i<resultArray.size(); i++) {
 			for (int j=0; j<resultArray.get(i).size(); j++) {
 				System.out.println(resultArray.get(i).get(j).getAbsolutePath());
@@ -24,7 +23,10 @@ public class Finder {
 	}
 	
 	
-	//search all files and add to array 
+	/**
+	 * Search all files and add to array 
+	 * @param path - selected directory
+	 */
 	private void find(String path) {
 		ArrayList<String> tmp = new ArrayList<String>();
 		File fileList[] = new File(path).listFiles();
@@ -37,6 +39,10 @@ public class Finder {
 		}
 	}
 	
+	/**
+	 * Compare name and size all files
+	 * If found duplicate add to resultArray
+	 */
 	private void compareFiles() {
 		for (int i=0; i<itemArray.size(); i++) {
 			ArrayList<File> duplicateFileArray = new ArrayList<File>();

@@ -19,7 +19,7 @@ public class MainFrame extends JFrame {
 	private JPanel middlePanel;
 	private JPanel bottomPanel;
 	private JButton searchButton, deleteButton, exitButton, selectPathButton;
-	//private JTextField pathTextField;
+	private JTextField pathTextField;
 	
 	public MainFrame() {
 		Toolkit kit = Toolkit.getDefaultToolkit() ;
@@ -38,25 +38,25 @@ public class MainFrame extends JFrame {
         bottomPanel = new JPanel(new FlowLayout());
         bottomPanel.setVisible(true);
         
-        //создаём события
+        //create action
         ButtonAction buttonAction = new ButtonAction();
         
-        //наполняем верхнюю панель
+        //Fill top panel
         topPanel.add(new JLabel("Path: "));
         selectPathButton = new JButton("...");
         selectPathButton.setPreferredSize(new Dimension(25, 25));
         selectPathButton.addActionListener(buttonAction);
         //topPanel.add(new JFileChooser());
-        JTextField pathTextField = new JTextField();
+        pathTextField = new JTextField();
         pathTextField.setPreferredSize(new Dimension(200, 25));
         pathTextField.setText("c:\\");
         topPanel.add(pathTextField, null);
         topPanel.add(selectPathButton);
         
-        //наполняем среднюю панель
+        //Fill middle panel
         middlePanel.add(new JLabel("Hello!"));
         
-        //наполняем нижнюю панель
+        //Fill bottom panel
         searchButton = new JButton("Search");
         searchButton.setPreferredSize(new Dimension(100, 25));
         searchButton.addActionListener(buttonAction);
@@ -80,15 +80,21 @@ public class MainFrame extends JFrame {
         @Override
 		public void actionPerformed(ActionEvent event) {
         	if (event.getSource() == selectPathButton) {
-        		// запускать файлчосер
+        		// запускать файлчузер
+        		JFileChooser choosFolder = new JFileChooser();
+            	choosFolder.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int ret = choosFolder.showDialog(null, "Select");				
+				if (ret == JFileChooser.APPROVE_OPTION) {
+					pathTextField.setText(choosFolder.getSelectedFile().getAbsolutePath());
+				}
         	}
         	if (event.getSource() == searchButton) {
         		// запускаем поиск, сравнение файлов и вывод дубликатов
+        		new Finder(pathTextField.getText());
         	}
         	if (event.getSource() == deleteButton) {
         		// удаляем 
         	}
-        	
         	if (event.getSource() == exitButton){
         		 System.exit(0);
         	}

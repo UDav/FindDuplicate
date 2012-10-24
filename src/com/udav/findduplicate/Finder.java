@@ -13,12 +13,12 @@ public class Finder {
 		compareFiles();	
 		
 		// Output duplicates
-		for (int i=0; i<resultArray.size(); i++) {
+		/*for (int i=0; i<resultArray.size(); i++) {
 			for (int j=0; j<resultArray.get(i).size(); j++) {
 				System.out.println(resultArray.get(i).get(j).getAbsolutePath());
 			}
 			System.out.println("-------------------------------");
-		}
+		}*/
 		
 	}
 	
@@ -50,13 +50,15 @@ public class Finder {
 			for (int j=0; j<itemArray.size(); j++) {
 				if ((itemArray.get(i).getName().equals(itemArray.get(j).getName()) 
 						&& (itemArray.get(i).length() == itemArray.get(j).length()) 
-						&& (j!=i) /*&& (j>i)*/)) {
+						&& (j!=i))) {
 					if (!notFirst) {
 						duplicateFileArray.add(itemArray.get(i));
 						duplicateFileArray.add(itemArray.get(j));
+						itemArray.remove(j);
 						notFirst = true;
 					} else {
 						duplicateFileArray.add(itemArray.get(j));
+						itemArray.remove(j);
 					}
 				}
 			}
@@ -67,7 +69,6 @@ public class Finder {
 	}
 	
 	public ArrayList<ArrayList<File>> getFileDuplicateArray() {
-		
 		return resultArray;
 	}
 	

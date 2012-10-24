@@ -55,15 +55,11 @@ public class MainFrame extends JFrame {
         selectPathButton = new JButton("...");
         selectPathButton.setPreferredSize(new Dimension(25, 25));
         selectPathButton.addActionListener(buttonAction);
-        //topPanel.add(new JFileChooser());
         pathTextField = new JTextField();
         pathTextField.setPreferredSize(new Dimension(200, 25));
         pathTextField.setText("c:\\");
         topPanel.add(pathTextField, null);
         topPanel.add(selectPathButton);
-        
-        //Fill middle panel
-        //middlePanel.add(new JLabel("Hello!"));
                 
         //Fill bottom panel
         searchButton = new JButton("Search");
@@ -97,6 +93,7 @@ public class MainFrame extends JFrame {
         	JPanel tmpPanel = new JPanel();
         	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.PAGE_AXIS));
+        	tmpPanel.add(new JLabel(fileDuplicateArray.get(i).get(0).getName()+" "+fileDuplicateArray.get(i).get(0).length()));
         	ArrayList<JCheckBox> tmpCheckBoxArray = new ArrayList<JCheckBox>();
         	for (int j=0; j<subArray.size(); j++){
         		JCheckBox tmpJCheckBox = new JCheckBox(subArray.get(j).getAbsolutePath()); 
@@ -114,10 +111,11 @@ public class MainFrame extends JFrame {
 	
 	private void deleteSelectedDuplicate() {
 		for (int i=0; i<checkBoxArray.size(); i++) {
-			ArrayList<JCheckBox> tmpCheckBoxArray = new ArrayList<JCheckBox>();
-			ArrayList<File> tmpFileDuplicateArray = new ArrayList<File>();
+			ArrayList<JCheckBox> tmpCheckBoxArray = checkBoxArray.get(i);
+			ArrayList<File> tmpFileDuplicateArray = fileDuplicateArray.get(i);
 			for (int j=0; j<tmpCheckBoxArray.size(); j++) {
 				if (tmpCheckBoxArray.get(j).isSelected()) {
+					System.out.println("delete "+j);
 					tmpFileDuplicateArray.get(j).delete();
 				}
 			}
@@ -138,9 +136,11 @@ public class MainFrame extends JFrame {
         	}
         	if (event.getSource() == searchButton) {
         		// запускаем поиск, сравнение файлов и вывод дубликатов
+        		searchButton.setEnabled(false);
         		Finder finder = new Finder(pathTextField.getText());
         		fileDuplicateArray = finder.getFileDuplicateArray();
         		fillMiddlePanel();
+        		searchButton.setEnabled(true);
         	}
         	if (event.getSource() == deleteButton) {
         		// удаляем 

@@ -50,7 +50,7 @@ public class Finder {
 			for (int j=0; j<itemArray.size(); j++) {
 				if ((itemArray.get(i).getName().equals(itemArray.get(j).getName()) 
 						&& (itemArray.get(i).length() == itemArray.get(j).length()) 
-						&& (j!=i))) {		
+						&& (j!=i) /*&& (j>i)*/)) {
 					if (!notFirst) {
 						duplicateFileArray.add(itemArray.get(i));
 						duplicateFileArray.add(itemArray.get(j));
@@ -64,6 +64,11 @@ public class Finder {
 			if (duplicateFileArray.size()>0)
 				resultArray.add(duplicateFileArray);
 		}
+	}
+	
+	public ArrayList<ArrayList<File>> getFileDuplicateArray() {
+		
+		return resultArray;
 	}
 	
 }

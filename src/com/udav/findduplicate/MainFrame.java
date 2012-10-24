@@ -7,33 +7,42 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import java.util.ArrayList;
+import java.io.File;
 
 public class MainFrame extends JFrame {
 	private JPanel topPanel;
-	private JPanel middlePanel;
+	private JScrollPane middlePanel;
 	private JPanel bottomPanel;
 	private JButton searchButton, deleteButton, exitButton, selectPathButton;
-	private JTextField pathTextField;
+	public JTextField pathTextField;
+	
+	private ArrayList<ArrayList<File>> fileDuplicateArray;
+	private ArrayList<ArrayList<JCheckBox>> checkBoxArray = new ArrayList<ArrayList<JCheckBox>>();
 	
 	public MainFrame() {
 		Toolkit kit = Toolkit.getDefaultToolkit() ;
         Dimension screenSize = kit.getScreenSize() ;
         int x = screenSize.width;
         int y = screenSize.height;
-        setResizable(false);
+        //setResizable(false);
         setBounds(x/4, y/4, 600, 600);
         setTitle("FindDuplicate");
         
         
         topPanel = new JPanel(new FlowLayout());
         topPanel.setVisible(true);
-        middlePanel = new JPanel(new FlowLayout());
+        middlePanel = new JScrollPane();
         middlePanel.setVisible(true);
         bottomPanel = new JPanel(new FlowLayout());
         bottomPanel.setVisible(true);
@@ -54,8 +63,8 @@ public class MainFrame extends JFrame {
         topPanel.add(selectPathButton);
         
         //Fill middle panel
-        middlePanel.add(new JLabel("Hello!"));
-        
+        //middlePanel.add(new JLabel("Hello!"));
+                
         //Fill bottom panel
         searchButton = new JButton("Search");
         searchButton.setPreferredSize(new Dimension(100, 25));
@@ -76,6 +85,45 @@ public class MainFrame extends JFrame {
         
         setVisible(true);
 	}
+	
+	private void fillMiddlePanel(){
+		JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        panel.setVisible(true);
+        middlePanel.add(panel);
+        
+        for (int i=0; i<fileDuplicateArray.size(); i++) {
+        	ArrayList<File> subArray = fileDuplicateArray.get(i);
+        	JPanel tmpPanel = new JPanel();
+        	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.PAGE_AXIS));
+        	ArrayList<JCheckBox> tmpCheckBoxArray = new ArrayList<JCheckBox>();
+        	for (int j=0; j<subArray.size(); j++){
+        		JCheckBox tmpJCheckBox = new JCheckBox(subArray.get(j).getAbsolutePath()); 
+        		tmpPanel.add(tmpJCheckBox);
+        		tmpCheckBoxArray.add(tmpJCheckBox);
+        		tmpPanel.revalidate();
+        	}
+        	checkBoxArray.add(tmpCheckBoxArray);
+        	panel.add(tmpPanel);
+        	panel.revalidate();
+        }
+
+        middlePanel.setViewportView(panel);
+	}
+	
+	private void deleteSelectedDuplicate() {
+		for (int i=0; i<checkBoxArray.size(); i++) {
+			ArrayList<JCheckBox> tmpCheckBoxArray = new ArrayList<JCheckBox>();
+			ArrayList<File> tmpFileDuplicateArray = new ArrayList<File>();
+			for (int j=0; j<tmpCheckBoxArray.size(); j++) {
+				if (tmpCheckBoxArray.get(j).isSelected()) {
+					tmpFileDuplicateArray.get(j).delete();
+				}
+			}
+		}
+	}
+	
 	class ButtonAction implements ActionListener {
         @Override
 		public void actionPerformed(ActionEvent event) {
@@ -90,10 +138,13 @@ public class MainFrame extends JFrame {
         	}
         	if (event.getSource() == searchButton) {
         		// запускаем поиск, сравнение файлов и вывод дубликатов
-        		new Finder(pathTextField.getText());
+        		Finder finder = new Finder(pathTextField.getText());
+        		fileDuplicateArray = finder.getFileDuplicateArray();
+        		fillMiddlePanel();
         	}
         	if (event.getSource() == deleteButton) {
         		// удаляем 
+        		deleteSelectedDuplicate();
         	}
         	if (event.getSource() == exitButton){
         		 System.exit(0);

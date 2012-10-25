@@ -93,8 +93,10 @@ public class MainFrame extends JFrame {
         	JPanel tmpPanel = new JPanel();
         	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.PAGE_AXIS));
-        	tmpPanel.add(new JLabel(fileDuplicateArray.get(i).get(0).getName()+" "+fileDuplicateArray.get(i).get(0).length()));
+        	if (fileDuplicateArray.size() > 0)
+        		tmpPanel.add(new JLabel(fileDuplicateArray.get(i).get(0).getName()+" "+fileDuplicateArray.get(i).get(0).length()));
         	ArrayList<JCheckBox> tmpCheckBoxArray = new ArrayList<JCheckBox>();
+        	System.out.println(subArray.size());
         	for (int j=0; j<subArray.size(); j++){
         		JCheckBox tmpJCheckBox = new JCheckBox(subArray.get(j).getAbsolutePath()); 
         		tmpPanel.add(tmpJCheckBox);
@@ -115,11 +117,13 @@ public class MainFrame extends JFrame {
 			ArrayList<File> tmpFileDuplicateArray = fileDuplicateArray.get(i);
 			for (int j=0; j<tmpCheckBoxArray.size(); j++) {
 				if (tmpCheckBoxArray.get(j).isSelected()) {
-					System.out.println("delete "+j);
 					tmpFileDuplicateArray.get(j).delete();
+					tmpFileDuplicateArray.remove(j);
+					//tmpCheckBoxArray.get(j).disable();
 				}
 			}
 		}
+		fillMiddlePanel();
 	}
 	
 	class ButtonAction implements ActionListener {

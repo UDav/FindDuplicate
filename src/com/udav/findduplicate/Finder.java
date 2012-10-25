@@ -8,7 +8,7 @@ public class Finder {
 	private ArrayList<ArrayList<File>> resultArray = new ArrayList<ArrayList<File>>();	
 	private boolean notFirst = false;
 
-	public Finder(String pathToFolder) {
+	public Finder(String pathToFolder, String extension) {
 		find(pathToFolder);
 		compareFiles();	
 		
@@ -31,7 +31,9 @@ public class Finder {
 		ArrayList<String> tmp = new ArrayList<String>();
 		File fileList[] = new File(path).listFiles();
 		for (int i=0; i<fileList.length; i++) {
-			if (fileList[i].isFile()) itemArray.add(fileList[i]);
+			if (fileList[i].isFile()) {
+				itemArray.add(fileList[i]);
+			}
 			if (fileList[i].isDirectory() && !fileList[i].isHidden() && fileList[i].canExecute() && fileList[i].canRead()) 
 				tmp.add(fileList[i].getAbsolutePath());
 		}

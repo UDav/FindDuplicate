@@ -26,9 +26,10 @@ public class MainFrame extends JFrame {
 	private JPanel bottomPanel;
 	private JButton searchButton, deleteButton, exitButton, selectPathButton;
 	public JTextField pathTextField;
+	private JTextField extensionTextField;
 	
 	private ArrayList<ArrayList<File>> fileDuplicateArray;
-	private ArrayList<ArrayList<JCheckBox>> checkBoxArray = new ArrayList<ArrayList<JCheckBox>>();
+	private ArrayList<ArrayList<JCheckBox>> checkBoxArray;
 	
 	public MainFrame() {
 		Toolkit kit = Toolkit.getDefaultToolkit() ;
@@ -58,8 +59,11 @@ public class MainFrame extends JFrame {
         pathTextField = new JTextField();
         pathTextField.setPreferredSize(new Dimension(200, 25));
         pathTextField.setText("c:\\");
+        extensionTextField = new JTextField();
+        extensionTextField.setPreferredSize(new Dimension(100, 25));
         topPanel.add(pathTextField, null);
         topPanel.add(selectPathButton);
+        topPanel.add(extensionTextField);
                 
         //Fill bottom panel
         searchButton = new JButton("Search");
@@ -88,15 +92,15 @@ public class MainFrame extends JFrame {
         panel.setVisible(true);
         middlePanel.add(panel);
         
+        checkBoxArray = new ArrayList<ArrayList<JCheckBox>>();
         for (int i=0; i<fileDuplicateArray.size(); i++) {
         	ArrayList<File> subArray = fileDuplicateArray.get(i);
         	JPanel tmpPanel = new JPanel();
         	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.PAGE_AXIS));
-        	if (fileDuplicateArray.size() > 0)
-        		tmpPanel.add(new JLabel(fileDuplicateArray.get(i).get(0).getName()+" "+fileDuplicateArray.get(i).get(0).length()));
+        	if (subArray.size() > 0)
+        		tmpPanel.add(new JLabel(subArray.get(0).getName()+" "+subArray.get(0).length()));
         	ArrayList<JCheckBox> tmpCheckBoxArray = new ArrayList<JCheckBox>();
-        	System.out.println(subArray.size());
         	for (int j=0; j<subArray.size(); j++){
         		JCheckBox tmpJCheckBox = new JCheckBox(subArray.get(j).getAbsolutePath()); 
         		tmpPanel.add(tmpJCheckBox);
@@ -118,12 +122,10 @@ public class MainFrame extends JFrame {
 			for (int j=0; j<tmpCheckBoxArray.size(); j++) {
 				if (tmpCheckBoxArray.get(j).isSelected()) {
 					tmpFileDuplicateArray.get(j).delete();
-					tmpFileDuplicateArray.remove(j);
-					//tmpCheckBoxArray.get(j).disable();
+					tmpCheckBoxArray.get(j).setEnabled(false);
 				}
 			}
 		}
-		fillMiddlePanel();
 	}
 	
 	class ButtonAction implements ActionListener {
@@ -141,7 +143,7 @@ public class MainFrame extends JFrame {
         	if (event.getSource() == searchButton) {
         		// запускаем поиск, сравнение файлов и вывод дубликатов
         		searchButton.setEnabled(false);
-        		Finder finder = new Finder(pathTextField.getText());
+        		Finder finder = new Finder(pathTextField.getText(), extensionTextField.getText());
         		fileDuplicateArray = finder.getFileDuplicateArray();
         		fillMiddlePanel();
         		searchButton.setEnabled(true);

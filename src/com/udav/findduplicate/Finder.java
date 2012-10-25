@@ -32,7 +32,8 @@ public class Finder {
 		File fileList[] = new File(path).listFiles();
 		for (int i=0; i<fileList.length; i++) {
 			if (fileList[i].isFile()) itemArray.add(fileList[i]);
-			if (fileList[i].isDirectory()) tmp.add(fileList[i].getAbsolutePath());
+			if (fileList[i].isDirectory() && !fileList[i].isHidden() && fileList[i].canExecute() && fileList[i].canRead()) 
+				tmp.add(fileList[i].getAbsolutePath());
 		}
 		for (int i=0; i<tmp.size(); i++) {
 			find(tmp.get(i));

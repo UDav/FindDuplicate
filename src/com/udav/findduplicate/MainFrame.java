@@ -17,6 +17,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
 import java.util.ArrayList;
 import java.io.File;
 
@@ -61,6 +63,7 @@ public class MainFrame extends JFrame {
         pathTextField.setText("c:\\");
         extensionTextField = new JTextField();
         extensionTextField.setPreferredSize(new Dimension(100, 25));
+        extensionTextField.setText("*");
         topPanel.add(pathTextField, null);
         topPanel.add(selectPathButton);
         topPanel.add(extensionTextField);
@@ -99,7 +102,7 @@ public class MainFrame extends JFrame {
         	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.PAGE_AXIS));
         	if (subArray.size() > 0)
-        		tmpPanel.add(new JLabel(subArray.get(0).getName()+" "+subArray.get(0).length()));
+        		tmpPanel.add(new JLabel(subArray.get(0).getName()+" "+subArray.get(0).length()/1048576+"MB"));
         	ArrayList<JCheckBox> tmpCheckBoxArray = new ArrayList<JCheckBox>();
         	for (int j=0; j<subArray.size(); j++){
         		JCheckBox tmpJCheckBox = new JCheckBox(subArray.get(j).getAbsolutePath()); 
@@ -137,7 +140,9 @@ public class MainFrame extends JFrame {
             	choosFolder.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				int ret = choosFolder.showDialog(null, "Select");				
 				if (ret == JFileChooser.APPROVE_OPTION) {
-					pathTextField.setText(choosFolder.getSelectedFile().getAbsolutePath());
+					if (!pathTextField.getText().equals(""))
+						pathTextField.setText(pathTextField.getText()+";"+choosFolder.getSelectedFile().getAbsolutePath());
+					else pathTextField.setText(choosFolder.getSelectedFile().getAbsolutePath());
 				}
         	}
         	if (event.getSource() == searchButton) {
@@ -145,6 +150,7 @@ public class MainFrame extends JFrame {
         		searchButton.setEnabled(false);
         		Finder finder = new Finder(pathTextField.getText(), extensionTextField.getText());
         		fileDuplicateArray = finder.getFileDuplicateArray();
+        		
         		fillMiddlePanel();
         		searchButton.setEnabled(true);
         	}

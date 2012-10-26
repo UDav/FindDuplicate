@@ -7,11 +7,19 @@ public class Finder {
 	private ArrayList<File> itemArray = new ArrayList<File>();
 	private ArrayList<ArrayList<File>> resultArray = new ArrayList<ArrayList<File>>();	
 	private boolean notFirst = false;
+	private String pathToFolder;
+	private String extensions[];
 
 	public Finder(String pathToFolder, String extension) {
-		find(pathToFolder);
-		compareFiles();	
+		this.pathToFolder = pathToFolder;
+		this.extensions = extension.split(";");
 		
+		String tmp[] = pathToFolder.split(";");
+		for (int i=0; i<tmp.length; i++)
+			find(tmp[i]);
+		
+		compareFiles();	
+				
 		// Output duplicates
 		/*for (int i=0; i<resultArray.size(); i++) {
 			for (int j=0; j<resultArray.get(i).size(); j++) {
@@ -32,7 +40,20 @@ public class Finder {
 		File fileList[] = new File(path).listFiles();
 		for (int i=0; i<fileList.length; i++) {
 			if (fileList[i].isFile()) {
-				itemArray.add(fileList[i]);
+				if (extensions[0].equals("*")) {
+					// collect all files
+					itemArray.add(fileList[i]);
+				} else {
+					// collect files where extension match
+					String splitFileName[] = fileList[i].getName().split("\\.");
+					String fileExtension = ""; 
+					if (splitFileName.length > 1) fileExtension = splitFileName[1];
+					for (int j=0; j<extensions.length; j++) {
+						if (fileExtension.equalsIgnoreCase(extensions[j])) {
+							itemArray.add(fileList[i]);
+						}
+					}
+				} 
 			}
 			if (fileList[i].isDirectory() && !fileList[i].isHidden() && fileList[i].canExecute() && fileList[i].canRead()) 
 				tmp.add(fileList[i].getAbsolutePath());
@@ -48,8 +69,7 @@ public class Finder {
 	 */
 	private void compareFiles() {
 		for (int i=0; i<itemArray.size(); i++) {
-			ArrayList<File> duplicateFileArray = new ArrayList<File>();
-			
+			ArrayList<File> duplicateFileArray = new ArrayList<File>();		
 			for (int j=0; j<itemArray.size(); j++) {
 				if ((itemArray.get(i).getName().equals(itemArray.get(j).getName()) 
 						&& (itemArray.get(i).length() == itemArray.get(j).length()) 
@@ -57,11 +77,11 @@ public class Finder {
 					if (!notFirst) {
 						duplicateFileArray.add(itemArray.get(i));
 						duplicateFileArray.add(itemArray.get(j));
-						itemArray.remove(j);
+						itemArray.remove(j); j--;
 						notFirst = true;
 					} else {
 						duplicateFileArray.add(itemArray.get(j));
-						itemArray.remove(j);
+						itemArray.remove(j); j--;
 					}
 				}
 			}

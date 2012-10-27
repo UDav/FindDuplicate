@@ -102,7 +102,7 @@ public class MainFrame extends JFrame {
         	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.PAGE_AXIS));
         	if (subArray.size() > 0)
-        		tmpPanel.add(new JLabel(subArray.get(0).getName()+" "+subArray.get(0).length()/1048576+"MB"));
+        		tmpPanel.add(new JLabel(subArray.get(0).getName()+" "+subArray.get(0).length()/1048576+"MB "+subArray.get(0).length()%1048576+"KB"));
         	ArrayList<JCheckBox> tmpCheckBoxArray = new ArrayList<JCheckBox>();
         	for (int j=0; j<subArray.size(); j++){
         		JCheckBox tmpJCheckBox = new JCheckBox(subArray.get(j).getAbsolutePath()); 

@@ -3,7 +3,10 @@ package com.udav.findduplicate;
 import java.io.File;
 import java.util.ArrayList;
 
-public class Finder {
+import javax.swing.SwingWorker;
+
+public class Finder extends SwingWorker<Integer, Object>{
+	
 	private ArrayList<File> itemArray = new ArrayList<File>();
 	private ArrayList<ArrayList<File>> resultArray = new ArrayList<ArrayList<File>>();	
 	private boolean notFirst = false;
@@ -14,11 +17,7 @@ public class Finder {
 		this.pathToFolder = pathToFolder;
 		this.extensions = extension.split(";");
 		
-		String tmp[] = pathToFolder.split(";");
-		for (int i=0; i<tmp.length; i++)
-			find(tmp[i]);
 		
-		compareFiles();	
 				
 		// Output duplicates
 		/*for (int i=0; i<resultArray.size(); i++) {
@@ -93,6 +92,22 @@ public class Finder {
 	
 	public ArrayList<ArrayList<File>> getFileDuplicateArray() {
 		return resultArray;
+	}
+
+
+	@Override
+	protected Integer doInBackground() throws Exception {
+		String tmp[] = pathToFolder.split(";");
+		System.out.println("Start find file!");
+		for (int i=0; i<tmp.length; i++)
+			find(tmp[i]);
+		System.out.println("Stop find file!");
+		
+		System.out.println("Start compare file!");
+		compareFiles();	
+		System.out.println("Stop compare file!");
+		
+		return 1;
 	}
 	
 }

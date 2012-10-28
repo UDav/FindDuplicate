@@ -148,11 +148,22 @@ public class MainFrame extends JFrame {
         	if (event.getSource() == searchButton) {
         		// запускаем поиск, сравнение файлов и вывод дубликатов
         		searchButton.setEnabled(false);
-        		Finder finder = new Finder(pathTextField.getText(), extensionTextField.getText());
-        		fileDuplicateArray = finder.getFileDuplicateArray();
+        		//Finder finder = new Finder(pathTextField.getText(), extensionTextField.getText());
+        		//finder.execute();
         		
-        		fillMiddlePanel();
-        		searchButton.setEnabled(true);
+        		new Finder(pathTextField.getText(), extensionTextField.getText()){
+        			@Override
+        			protected void done() {
+        				fileDuplicateArray = this.getFileDuplicateArray();
+        				fillMiddlePanel();
+        				searchButton.setEnabled(true);
+        				super.done();
+        			}
+        		}.execute();
+        		
+        		//fileDuplicateArray = finder.getFileDuplicateArray();
+        		//fillMiddlePanel();
+        		//searchButton.setEnabled(true);
         	}
         	if (event.getSource() == deleteButton) {
         		// удаляем 

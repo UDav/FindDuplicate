@@ -2,6 +2,7 @@ package com.udav.findduplicate;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.SwingWorker;
 
@@ -98,14 +99,14 @@ public class Finder extends SwingWorker<Integer, Object>{
 	@Override
 	protected Integer doInBackground() throws Exception {
 		String tmp[] = pathToFolder.split(";");
-		System.out.println("Start find file!");
+		
+		publish("State 1 of 2: Collect files!");
 		for (int i=0; i<tmp.length; i++)
 			find(tmp[i]);
-		System.out.println("Stop find file!");
 		
-		System.out.println("Start compare file!");
+		publish("State 2 of 2: Find duplicate files!");
 		compareFiles();	
-		System.out.println("Stop compare file!");
+		
 		
 		return 1;
 	}

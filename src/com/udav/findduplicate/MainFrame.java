@@ -1,13 +1,17 @@
 package com.udav.findduplicate;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.LayoutManager;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -15,11 +19,13 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.LayoutStyle;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.io.File;
 
 public class MainFrame extends JFrame {
@@ -29,6 +35,7 @@ public class MainFrame extends JFrame {
 	private JButton searchButton, deleteButton, exitButton, selectPathButton;
 	public JTextField pathTextField;
 	private JTextField extensionTextField;
+	private JLabel status;
 	
 	private ArrayList<ArrayList<File>> fileDuplicateArray;
 	private ArrayList<ArrayList<JCheckBox>> checkBoxArray;
@@ -118,6 +125,22 @@ public class MainFrame extends JFrame {
         middlePanel.setViewportView(panel);
 	}
 	
+	private void fillMiddlePanelWhileWait() {
+		//JPanel progressPanel = new JPanel();
+		JProgressBar progressBar = new JProgressBar();
+		progressBar.setIndeterminate(true);
+		status = new JLabel();
+		
+		//status.setText("I'm work!");
+		Box box = Box.createVerticalBox();
+		box.add(status);
+		box.add(progressBar);
+		//progressPanel.add(status);
+		//progressPanel.add(progressBar);
+		
+		middlePanel.setViewportView(box/*progressPanel*/);
+	}
+	
 	private void deleteSelectedDuplicate() {
 		for (int i=0; i<checkBoxArray.size(); i++) {
 			ArrayList<JCheckBox> tmpCheckBoxArray = checkBoxArray.get(i);
@@ -148,22 +171,25 @@ public class MainFrame extends JFrame {
         	if (event.getSource() == searchButton) {
         		// запускаем поиск, сравнение файлов и вывод дубликатов
         		searchButton.setEnabled(false);
-        		//Finder finder = new Finder(pathTextField.getText(), extensionTextField.getText());
-        		//finder.execute();
-        		
+        		deleteButton.setEnabled(false);
+
+        		fillMiddlePanelWhileWait();
         		new Finder(pathTextField.getText(), extensionTextField.getText()){
         			@Override
         			protected void done() {
         				fileDuplicateArray = this.getFileDuplicateArray();
         				fillMiddlePanel();
         				searchButton.setEnabled(true);
+        				deleteButton.setEnabled(true);
         				super.done();
         			}
+        			
+        			@Override
+        			protected void process(List<Object> chunks) {
+        				status.setText(chunks.get(0).toString());
+        				super.process(chunks);
+        			}
         		}.execute();
-        		
-        		//fileDuplicateArray = finder.getFileDuplicateArray();
-        		//fillMiddlePanel();
-        		//searchButton.setEnabled(true);
         	}
         	if (event.getSource() == deleteButton) {
         		// удаляем 

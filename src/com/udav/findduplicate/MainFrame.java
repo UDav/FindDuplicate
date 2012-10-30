@@ -45,10 +45,10 @@ public class MainFrame extends JFrame {
         Dimension screenSize = kit.getScreenSize() ;
         int x = screenSize.width;
         int y = screenSize.height;
-        //setResizable(false);
         setBounds(x/4, y/4, 600, 600);
+        setMinimumSize(new Dimension(600, 600));   
         setTitle("FindDuplicate");
-        
+             
         
         topPanel = new JPanel(new FlowLayout());
         topPanel.setVisible(true);
@@ -67,7 +67,7 @@ public class MainFrame extends JFrame {
         selectPathButton.addActionListener(buttonAction);
         pathTextField = new JTextField();
         pathTextField.setPreferredSize(new Dimension(200, 25));
-        pathTextField.setText("c:\\");
+        //pathTextField.setText("c:\\");
         extensionTextField = new JTextField();
         extensionTextField.setPreferredSize(new Dimension(100, 25));
         extensionTextField.setText("*");
@@ -109,7 +109,7 @@ public class MainFrame extends JFrame {
         	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.PAGE_AXIS));
         	if (subArray.size() > 0)
-        		tmpPanel.add(new JLabel(subArray.get(0).getName()+" "+subArray.get(0).length()/1048576+"MB "+subArray.get(0).length()%1048576+"KB"));
+        		tmpPanel.add(new JLabel(subArray.get(0).getName()+" "+subArray.get(0).length()/1048576+"MB "+(subArray.get(0).length()%1048576)/1024+"KB"));
         	ArrayList<JCheckBox> tmpCheckBoxArray = new ArrayList<JCheckBox>();
         	for (int j=0; j<subArray.size(); j++){
         		JCheckBox tmpJCheckBox = new JCheckBox(subArray.get(j).getAbsolutePath()); 

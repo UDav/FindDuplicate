@@ -18,17 +18,6 @@ public class Finder extends SwingWorker<Integer, Object>{
 	public Finder(String pathToFolder, String extension) {
 		this.pathToFolder = pathToFolder;
 		this.extensions = extension.split(";");
-		
-		
-				
-		// Output duplicates
-		/*for (int i=0; i<resultArray.size(); i++) {
-			for (int j=0; j<resultArray.get(i).size(); j++) {
-				System.out.println(resultArray.get(i).get(j).getAbsolutePath());
-			}
-			System.out.println("-------------------------------");
-		}*/
-		
 	}
 	
 	
@@ -58,6 +47,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 			}
 			if (fileList[i].isDirectory() && !fileList[i].isHidden() && fileList[i].canExecute() && fileList[i].canRead()) {
 				tmp.add(fileList[i].getAbsolutePath());
+				//collect directories
 				directoryArray.add(fileList[i]);
 			}
 		}
@@ -68,37 +58,53 @@ public class Finder extends SwingWorker<Integer, Object>{
 	
 	
 	/**
+	 * Calculate size of directory
+	 * 
+	 * @param absolutePath - path to current directory
+	 * @return result - resulting size of the directory
+	 */
+	private long getDirectorySize(String absolutePath) {
+		long result = 0;
+		
+		File currentFilesList[] = new File(absolutePath).listFiles();
+		for (int i=0; i<currentFilesList.length; i++) {
+			if (currentFilesList[i].isFile()) result += currentFilesList[i].length();
+			if (currentFilesList[i].isDirectory()) result += getDirectorySize(currentFilesList[i].getAbsolutePath()); 
+		}
+		return result;
+	}
+	/**
 	 * Compare size and content directory
 	 */
 	private void compareDirectories() {
+		ArrayList<Long> sizes = new ArrayList<Long>();
 		for (int i=0; i<directoryArray.size(); i++) {
-			String temp[] = directoryArray.get(i).list();
-			for (int j=0; j<temp.length; j++) {
-				System.out.println(temp[j]);
-			}
-			
-			//System.out.println(directoryArray.get(i).getAbsolutePath()+" "+directoryArray.get(i).list().length);
+			sizes.add(getDirectorySize(directoryArray.get(i).getAbsolutePath()));
 		}
-		/*for (int i=0; i<directoryArray.size(); i++) {
-			ArrayList<File> duplicateDirectoryArray = new ArrayList<File>();
-			for (int j=0; j<directoryArray.size(); i++) {
-				if ((i!=j) && (directoryArray.get(i).length() == directoryArray.get(j).length())
-						&& (directoryArray.get(i).list().equals(directoryArray.get(j).list())) ) {
+		
+		for (int i=0; i<directoryArray.size(); i++) {
+			ArrayList<File> duplicateDirectory = new ArrayList<File>();
+			for (int j=0; j<directoryArray.size(); j++) {
+				if ( (i!=j) && (sizes.get(i).equals(sizes.get(j))) ) {
 					if (!notFirst) {
-						duplicateDirectoryArray.add(directoryArray.get(i));
-						duplicateDirectoryArray.add(directoryArray.get(j));
-						directoryArray.remove(j); j--;
+						System.out.println(directoryArray.get(i).getAbsolutePath()+" "+sizes.get(i));
+						System.out.println(directoryArray.get(j).getAbsolutePath()+" "+sizes.get(j));
+						duplicateDirectory.add(directoryArray.get(i));
+						duplicateDirectory.add(directoryArray.get(j));
+						directoryArray.remove(j); sizes.remove(j); j--;
 						notFirst = true;
 					} else {
-						duplicateDirectoryArray.add(directoryArray.get(j));
-						directoryArray.remove(j); j--;
+						System.out.println(directoryArray.get(j).getAbsolutePath()+" "+sizes.get(j));
+						duplicateDirectory.add(directoryArray.get(j));
+						directoryArray.remove(j); sizes.remove(j); j--;
 					}
 				}
 			}
 			notFirst = false;
-			if (duplicateDirectoryArray.size()>0)
-				resultArray.add(duplicateDirectoryArray);
-		}*/
+			System.out.println("------------------------------------------");
+			if (duplicateDirectory.size() > 0) resultArray.add(duplicateDirectory);
+		}
+			
 	}
 	
 	/**
@@ -143,8 +149,8 @@ public class Finder extends SwingWorker<Integer, Object>{
 			find(tmp[i]);
 		
 		publish("State 2 of 2: Find duplicate files!");
-		//compareDirectories();
-		compareFiles();	
+		compareDirectories();
+		//compareFiles();	
 		// Output duplicates
 		/*		for (int i=0; i<resultArray.size(); i++) {
 					for (int j=0; j<resultArray.get(i).size(); j++) {

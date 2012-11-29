@@ -73,10 +73,27 @@ public class Finder extends SwingWorker<Integer, Object>{
 		}
 		return result;
 	}
+	
+	/**
+	 * Compare filenames into two directories
+	 * @param firstDir
+	 * @param secondDir
+	 * @return
+	 */
+	private boolean compateDirectoriesContent(File firstDir, File secondDir){
+		String firstList[] = firstDir.list();
+		String secondList[] = secondDir.list();
+		for (int i=0; i<firstList.length; i++) {
+			if (!firstList[i].equals(secondList[i])) return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * Compare size and content directory
 	 */
 	private void compareDirectories() {
+		// create array and fill him directories size
 		ArrayList<Long> sizes = new ArrayList<Long>();
 		for (int i=0; i<directoryArray.size(); i++) {
 			sizes.add(getDirectorySize(directoryArray.get(i).getAbsolutePath()));
@@ -85,7 +102,8 @@ public class Finder extends SwingWorker<Integer, Object>{
 		for (int i=0; i<directoryArray.size(); i++) {
 			ArrayList<File> duplicateDirectory = new ArrayList<File>();
 			for (int j=0; j<directoryArray.size(); j++) {
-				if ( (i!=j) && (sizes.get(i).equals(sizes.get(j))) ) {
+				if ( (i!=j) && (sizes.get(i).equals(sizes.get(j))) 
+						&& (compateDirectoriesContent(directoryArray.get(i), directoryArray.get(j)))) {
 					if (!notFirst) {
 						System.out.println(directoryArray.get(i).getAbsolutePath()+" "+sizes.get(i));
 						System.out.println(directoryArray.get(j).getAbsolutePath()+" "+sizes.get(j));

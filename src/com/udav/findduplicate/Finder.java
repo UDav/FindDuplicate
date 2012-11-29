@@ -105,21 +105,21 @@ public class Finder extends SwingWorker<Integer, Object>{
 				if ( (i!=j) && (sizes.get(i).equals(sizes.get(j))) 
 						&& (compateDirectoriesContent(directoryArray.get(i), directoryArray.get(j)))) {
 					if (!notFirst) {
-						System.out.println(directoryArray.get(i).getAbsolutePath()+" "+sizes.get(i));
-						System.out.println(directoryArray.get(j).getAbsolutePath()+" "+sizes.get(j));
+						//System.out.println(directoryArray.get(i).getAbsolutePath()+" "+sizes.get(i));
+						//System.out.println(directoryArray.get(j).getAbsolutePath()+" "+sizes.get(j));
 						duplicateDirectory.add(directoryArray.get(i));
 						duplicateDirectory.add(directoryArray.get(j));
 						directoryArray.remove(j); sizes.remove(j); j--;
 						notFirst = true;
 					} else {
-						System.out.println(directoryArray.get(j).getAbsolutePath()+" "+sizes.get(j));
+						//System.out.println(directoryArray.get(j).getAbsolutePath()+" "+sizes.get(j));
 						duplicateDirectory.add(directoryArray.get(j));
 						directoryArray.remove(j); sizes.remove(j); j--;
 					}
 				}
 			}
 			notFirst = false;
-			System.out.println("------------------------------------------");
+			//System.out.println("------------------------------------------");
 			if (duplicateDirectory.size() > 0) resultArray.add(duplicateDirectory);
 		}
 			
@@ -162,13 +162,15 @@ public class Finder extends SwingWorker<Integer, Object>{
 	protected Integer doInBackground() throws Exception {
 		String tmp[] = pathToFolder.split(";");
 		
-		publish("State 1 of 2: Collect files!");
+		publish("State 1 of 3: Collect files and directories!");
 		for (int i=0; i<tmp.length; i++)
 			find(tmp[i]);
 		
-		publish("State 2 of 2: Find duplicate files!");
+		publish("State 2 of 3: Find duplicate directories!");
 		compareDirectories();
-		//compareFiles();	
+		
+		publish("State 3 of 3: Find duplicate files!");
+		compareFiles();	
 		// Output duplicates
 		/*		for (int i=0; i<resultArray.size(); i++) {
 					for (int j=0; j<resultArray.get(i).size(); j++) {

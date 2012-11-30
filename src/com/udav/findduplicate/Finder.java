@@ -10,7 +10,8 @@ public class Finder extends SwingWorker<Integer, Object>{
 	
 	private ArrayList<File> itemArray = new ArrayList<File>();
 	private ArrayList<File> directoryArray = new ArrayList<File>();
-	private ArrayList<ArrayList<File>> resultArray = new ArrayList<ArrayList<File>>();	
+	private ArrayList<ArrayList<File>> resultArray = new ArrayList<ArrayList<File>>();
+	private ArrayList<DirectoriesDuplicateContainer> resultDirectoriesArray = new ArrayList<DirectoriesDuplicateContainer>();
 	private boolean notFirst = false;
 	private String pathToFolder;
 	private String extensions[];
@@ -89,6 +90,13 @@ public class Finder extends SwingWorker<Integer, Object>{
 		return true;
 	}
 	
+/*	private boolean isAlreadyAdded() {
+		for (int i=0; i<resultDirectoriesArray.size(); i++){
+			
+		}
+		return false;
+	}*/
+	
 	/**
 	 * Compare size and content directory
 	 */
@@ -103,7 +111,9 @@ public class Finder extends SwingWorker<Integer, Object>{
 			ArrayList<File> duplicateDirectory = new ArrayList<File>();
 			for (int j=0; j<directoryArray.size(); j++) {
 				if ( (i!=j) && (sizes.get(i).equals(sizes.get(j))) 
-						&& (compateDirectoriesContent(directoryArray.get(i), directoryArray.get(j)))) {
+						&& (compateDirectoriesContent(directoryArray.get(i), directoryArray.get(j)))
+						//&& (!isAlreadyAdded())
+						) {
 					if (!notFirst) {
 						//System.out.println(directoryArray.get(i).getAbsolutePath()+" "+sizes.get(i));
 						//System.out.println(directoryArray.get(j).getAbsolutePath()+" "+sizes.get(j));
@@ -120,7 +130,9 @@ public class Finder extends SwingWorker<Integer, Object>{
 			}
 			notFirst = false;
 			//System.out.println("------------------------------------------");
-			if (duplicateDirectory.size() > 0) resultArray.add(duplicateDirectory);
+			if (duplicateDirectory.size() > 0) 
+				resultDirectoriesArray.add(new DirectoriesDuplicateContainer(duplicateDirectory, sizes.get(i)));
+				//resultArray.add(duplicateDirectory);
 		}
 			
 	}
@@ -156,6 +168,10 @@ public class Finder extends SwingWorker<Integer, Object>{
 	public ArrayList<ArrayList<File>> getFileDuplicateArray() {
 		return resultArray;
 	}
+	
+	public ArrayList<DirectoriesDuplicateContainer> getDirectoriesDuplicateArray() {
+		return resultDirectoriesArray;
+	}
 
 
 	@Override
@@ -171,6 +187,11 @@ public class Finder extends SwingWorker<Integer, Object>{
 		
 		publish("State 3 of 3: Find duplicate files!");
 		compareFiles();	
+		
+		for (int i=0; i<directoryArray.size(); i++) {
+			System.out.println(directoryArray.get(i));
+		}
+		
 		// Output duplicates
 		/*		for (int i=0; i<resultArray.size(); i++) {
 					for (int j=0; j<resultArray.get(i).size(); j++) {

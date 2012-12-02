@@ -2,7 +2,6 @@ package com.udav.findduplicate;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.SwingWorker;
 
@@ -90,12 +89,23 @@ public class Finder extends SwingWorker<Integer, Object>{
 		return true;
 	}
 	
-/*	private boolean isAlreadyAdded() {
+	private boolean isAlreadyAdded(File current) {
 		for (int i=0; i<resultDirectoriesArray.size(); i++){
+			ArrayList<File> dirDupArray = resultDirectoriesArray.get(i).getDuplicateArray();
+			for (int j=0; j<dirDupArray.size(); j++) {
+				while (!current.getAbsolutePath().equals(pathToFolder)) {
+					current = current.getParentFile();
+					if (current.getName().equals(dirDupArray.get(j).getName())){
+						return true;
+					}
+				}
+				//if (current.getParentFile().getName().equals(dirDupArray.get(j).getName()))
+				//	return true;
+			}
 			
 		}
 		return false;
-	}*/
+	}
 	
 	/**
 	 * Compare size and content directory
@@ -112,7 +122,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 			for (int j=0; j<directoryArray.size(); j++) {
 				if ( (i!=j) && (sizes.get(i).equals(sizes.get(j))) 
 						&& (compateDirectoriesContent(directoryArray.get(i), directoryArray.get(j)))
-						//&& (!isAlreadyAdded())
+						/*&& (!isAlreadyAdded(directoryArray.get(i)))*/
 						) {
 					if (!notFirst) {
 						//System.out.println(directoryArray.get(i).getAbsolutePath()+" "+sizes.get(i));
@@ -145,9 +155,12 @@ public class Finder extends SwingWorker<Integer, Object>{
 		for (int i=0; i<itemArray.size(); i++) {
 			ArrayList<File> duplicateFileArray = new ArrayList<File>();		
 			for (int j=0; j<itemArray.size(); j++) {
-				if ((itemArray.get(i).getName().equals(itemArray.get(j).getName()) 
+				if (
+						(itemArray.get(i).getName().equals(itemArray.get(j).getName()))
 						&& (itemArray.get(i).length() == itemArray.get(j).length()) 
-						&& (j!=i))) {
+						&& (j!=i)
+						/*&& (!isAlreadyAdded(itemArray.get(i))*/
+						) {
 					if (!notFirst) {
 						duplicateFileArray.add(itemArray.get(i));
 						duplicateFileArray.add(itemArray.get(j));
@@ -187,10 +200,6 @@ public class Finder extends SwingWorker<Integer, Object>{
 		
 		publish("State 3 of 3: Find duplicate files!");
 		compareFiles();	
-		
-		for (int i=0; i<directoryArray.size(); i++) {
-			System.out.println(directoryArray.get(i));
-		}
 		
 		// Output duplicates
 		/*		for (int i=0; i<resultArray.size(); i++) {

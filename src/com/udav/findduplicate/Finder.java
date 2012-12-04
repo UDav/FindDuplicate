@@ -83,19 +83,26 @@ public class Finder extends SwingWorker<Integer, Object>{
 	private boolean compateDirectoriesContent(File firstDir, File secondDir){
 		String firstList[] = firstDir.list();
 		String secondList[] = secondDir.list();
+		if (firstList.length != secondList.length) return false;
 		for (int i=0; i<firstList.length; i++) {
 			if (!firstList[i].equals(secondList[i])) return false;
 		}
 		return true;
 	}
 	
+	/**
+	 * Added or not file or directory
+	 * @param current - file or directory
+	 * @return true - file or directories added
+	 * 			false - file or directories not added
+	 */
 	private boolean isAlreadyAdded(File current) {
 		for (int i=0; i<resultDirectoriesArray.size(); i++){
 			ArrayList<File> dirDupArray = resultDirectoriesArray.get(i).getDuplicateArray();
 			for (int j=0; j<dirDupArray.size(); j++) {
 				File tmp = current;
 				while (!current.getAbsolutePath().equals(pathToFolder)) {
-					if (current.getName().equals(dirDupArray.get(j).getName())){
+					if (current.getAbsolutePath().equals(dirDupArray.get(j).getAbsolutePath())){
 						return true;
 					}
 					current = current.getParentFile();
@@ -121,9 +128,10 @@ public class Finder extends SwingWorker<Integer, Object>{
 			for (int j=0; j<directoryArray.size(); j++) {
 				if ( 
 						(i!=j) 
-						&& (sizes.get(i).equals(sizes.get(j))) 
+						&& (sizes.get(i).equals(sizes.get(j)))
+						&& (sizes.get(i) > 0)
 						&& (compateDirectoriesContent(directoryArray.get(i), directoryArray.get(j)))
-						&& (isAlreadyAdded(directoryArray.get(i)) == false)
+						&& (!isAlreadyAdded(directoryArray.get(i)))
 						) {
 					if (!notFirst) {
 						//System.out.println(directoryArray.get(i).getAbsolutePath()+" "+sizes.get(i));
@@ -159,7 +167,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 						(j!=i)
 						&& (fileArray.get(i).getName().equals(fileArray.get(j).getName()))
 						&& (fileArray.get(i).length() == fileArray.get(j).length()) 
-						&& (isAlreadyAdded(fileArray.get(i)) == false)
+						&& (!isAlreadyAdded(fileArray.get(i)))
 						) {
 					if (!notFirst) {
 						duplicateFileArray.add(fileArray.get(i));

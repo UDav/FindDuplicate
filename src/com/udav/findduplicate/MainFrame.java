@@ -26,15 +26,11 @@ import javax.swing.JTextField;
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
-	private final int BYTE = 1024;
-	private final int KBYTE = 1024*1024;
-	private final int MBYTE = 1024*1024*1024;
-	
 	private JPanel topPanel;
 	private JScrollPane middlePanel;
 	private JPanel bottomPanel;
 	private JButton searchButton, deleteButton, exitButton, selectPathButton;
-	public JTextField pathTextField;
+	private JTextField pathTextField;
 	private JTextField extensionTextField;
 	private JLabel status;
 	
@@ -99,6 +95,17 @@ public class MainFrame extends JFrame {
         
         setVisible(true);
 	}
+	/**
+	 * Convert size from byte to mb,kb,byte
+	 * @param sizeInByte
+	 * @return String "n MB m KB z B"
+	 */
+	private String byteToString(final long sizeInByte) {
+		final int KBYTE = 1024;
+		final int MBYTE = 1024*1024;
+		
+		return "|| "+sizeInByte/MBYTE+"MB "+(sizeInByte%MBYTE)/KBYTE+"KB "+((sizeInByte%MBYTE)%KBYTE)+"B";
+	}
 	
 	private void fillMiddlePanel(){
 		JPanel panel = new JPanel();
@@ -106,7 +113,7 @@ public class MainFrame extends JFrame {
         panel.setVisible(true);
         middlePanel.add(panel);
         
-        panel.add(new JLabel("Дубликаты папок"));
+        panel.add(new JLabel("Directories"));
         directoriesCheckBoxArray = new ArrayList<ArrayList<JCheckBox>>();
         for (int i=0; i<directoriesDuplicateArray.size(); i++) {
         	ArrayList<File> subArray = directoriesDuplicateArray.get(i).getDuplicateArray();
@@ -115,7 +122,7 @@ public class MainFrame extends JFrame {
         	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.PAGE_AXIS));
         	if (subArray.size() > 0)
-        		tmpPanel.add(new JLabel(subArray.get(0).getName()+" "+size/MBYTE+"MB "+(size%MBYTE)/KBYTE+"KB "+((size%MBYTE)%KBYTE)/BYTE+"B"));
+        		tmpPanel.add(new JLabel("Directories duplicate "+(i+1)/*subArray.get(0).getName()*/+" "+byteToString(size)));
         	ArrayList<JCheckBox> tmpCheckBoxArray = new ArrayList<JCheckBox>();
         	for (int j=0; j<subArray.size(); j++){
         		JCheckBox tmpJCheckBox = new JCheckBox(subArray.get(j).getAbsolutePath()); 
@@ -128,7 +135,7 @@ public class MainFrame extends JFrame {
         	//panel.revalidate();
         }
         
-        panel.add(new JLabel("Дубликаты файлов"));
+        panel.add(new JLabel("Files"));
         fileCheckBoxArray = new ArrayList<ArrayList<JCheckBox>>();
         for (int i=0; i<fileDuplicateArray.size(); i++) {
         	ArrayList<File> subArray = fileDuplicateArray.get(i);
@@ -136,7 +143,7 @@ public class MainFrame extends JFrame {
         	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.PAGE_AXIS));
         	if (subArray.size() > 0)
-        		tmpPanel.add(new JLabel(subArray.get(0).getName()+" "+subArray.get(0).length()/1048576+"MB "+(subArray.get(0).length()%1048576)/1024+"KB"));
+        		tmpPanel.add(new JLabel(subArray.get(0).getName()+" "+byteToString(subArray.get(0).length()) ) );
         	ArrayList<JCheckBox> tmpCheckBoxArray = new ArrayList<JCheckBox>();
         	for (int j=0; j<subArray.size(); j++){
         		JCheckBox tmpJCheckBox = new JCheckBox(subArray.get(j).getAbsolutePath()); 

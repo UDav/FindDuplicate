@@ -117,6 +117,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 	 * Compare size and content directory
 	 */
 	private void compareDirectories() {
+		long start = System.currentTimeMillis();
 		// create array and fill him directories size
 		ArrayList<Long> sizes = new ArrayList<Long>();
 		for (int i=0; i<directoryArray.size(); i++) {
@@ -125,34 +126,31 @@ public class Finder extends SwingWorker<Integer, Object>{
 		
 		for (int i=0; i<directoryArray.size(); i++) {
 			ArrayList<File> duplicateDirectory = new ArrayList<File>();
-			for (int j=0; j<directoryArray.size(); j++) {
+			for (int j=(i+1); j<directoryArray.size(); j++) {
 				if ( 
-						(i!=j) 
-						&& (sizes.get(i).equals(sizes.get(j)))
+						/*(i!=j) 
+						&&*/ (sizes.get(i).equals(sizes.get(j)))
 						&& (sizes.get(i) > 0)
 						&& (compateDirectoriesContent(directoryArray.get(i), directoryArray.get(j)))
 						&& (!isAlreadyAdded(directoryArray.get(i)))
 						) {
 					if (!notFirst) {
-						//System.out.println(directoryArray.get(i).getAbsolutePath()+" "+sizes.get(i));
-						//System.out.println(directoryArray.get(j).getAbsolutePath()+" "+sizes.get(j));
 						duplicateDirectory.add(directoryArray.get(i));
 						duplicateDirectory.add(directoryArray.get(j));
-						directoryArray.remove(j); sizes.remove(j); j--;
+						//directoryArray.remove(j); sizes.remove(j); j--;
 						notFirst = true;
 					} else {
-						//System.out.println(directoryArray.get(j).getAbsolutePath()+" "+sizes.get(j));
 						duplicateDirectory.add(directoryArray.get(j));
-						directoryArray.remove(j); sizes.remove(j); j--;
+						//directoryArray.remove(j); sizes.remove(j); j--;
 					}
 				}
 			}
 			notFirst = false;
-			//System.out.println("------------------------------------------");
 			if (duplicateDirectory.size() > 0){
 				resultDirectoriesArray.add(new DirectoriesDuplicateContainer(duplicateDirectory, sizes.get(i)));
 			}
 		}
+		System.out.println("1 "+(System.currentTimeMillis() - start));
 	}
 	
 	/**
@@ -160,23 +158,25 @@ public class Finder extends SwingWorker<Integer, Object>{
 	 * If found duplicate add to resultArray
 	 */
 	private void compareFiles() {
+		long start = System.currentTimeMillis();
 		for (int i=0; i<fileArray.size(); i++) {
 			ArrayList<File> duplicateFileArray = new ArrayList<File>();		
-			for (int j=0; j<fileArray.size(); j++) {
+			for (int j=(i+1); j<fileArray.size(); j++) {
 				if (
-						(j!=i)
-						&& (fileArray.get(i).getName().equals(fileArray.get(j).getName()))
-						&& (fileArray.get(i).length() == fileArray.get(j).length()) 
+						/*(j!=i)
+						&& */
+						(fileArray.get(i).getName().equals(fileArray.get(j).getName()))
+						&& (fileArray.get(i).length() == fileArray.get(j).length())
 						&& (!isAlreadyAdded(fileArray.get(i)))
 						) {
 					if (!notFirst) {
 						duplicateFileArray.add(fileArray.get(i));
 						duplicateFileArray.add(fileArray.get(j));
-						fileArray.remove(j); j--;
+						//fileArray.remove(j); j--;
 						notFirst = true;
 					} else {
 						duplicateFileArray.add(fileArray.get(j));
-						fileArray.remove(j); j--;
+						//fileArray.remove(j); j--;
 					}
 				}
 			}
@@ -184,6 +184,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 			if (duplicateFileArray.size()>0)
 				resultArray.add(duplicateFileArray);
 		}
+		System.out.println("2 "+(System.currentTimeMillis() - start));
 	}
 	
 	public ArrayList<ArrayList<File>> getFileDuplicateArray() {

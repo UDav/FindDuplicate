@@ -12,11 +12,11 @@ public class Finder extends SwingWorker<Integer, Object>{
 	private ArrayList<ArrayList<File>> resultArray = new ArrayList<ArrayList<File>>();
 	private ArrayList<DirectoriesDuplicateContainer> resultDirectoriesArray = new ArrayList<DirectoriesDuplicateContainer>();
 	private boolean notFirst = false;
-	private String pathToFolder;
+	private String pathList[];
 	private String extensions[];
 
 	public Finder(String pathToFolder, String extension) {
-		this.pathToFolder = pathToFolder;
+		pathList = pathToFolder.split(";");
 		this.extensions = extension.split(";");
 	}
 	
@@ -89,6 +89,18 @@ public class Finder extends SwingWorker<Integer, Object>{
 		}
 		return true;
 	}
+	/**
+	 * Compare path to current in isAllredyAdded 
+	 * with all path in array pathList
+	 * @param path
+	 * @return
+	 */
+	private boolean comparePath(String path) {
+		for (int i=0; i<pathList.length; i++) {
+			if (path.equals(pathList[i])) return true;
+		}
+		return false;
+	}
 	
 	/**
 	 * Added or not file or directory
@@ -101,7 +113,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 			ArrayList<File> dirDupArray = resultDirectoriesArray.get(i).getDuplicateArray();
 			for (int j=0; j<dirDupArray.size(); j++) {
 				File tmp = current;
-				while (!current.getAbsolutePath().equals(pathToFolder)) {
+				while (!comparePath(current.getAbsolutePath())) {
 					if (current.getAbsolutePath().equals(dirDupArray.get(j).getAbsolutePath())){
 						return true;
 					}
@@ -198,11 +210,9 @@ public class Finder extends SwingWorker<Integer, Object>{
 
 	@Override
 	protected Integer doInBackground() throws Exception {
-		String tmp[] = pathToFolder.split(";");
-		
 		publish("State 1 of 3: Collect files and directories!");
-		for (int i=0; i<tmp.length; i++)
-			find(tmp[i]);
+		for (int i=0; i<pathList.length; i++)
+			find(pathList[i]);
 		
 		publish("State 2 of 3: Find duplicate directories!");
 		compareDirectories();

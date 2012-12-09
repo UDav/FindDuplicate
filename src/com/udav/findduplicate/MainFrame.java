@@ -21,13 +21,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private JPanel topPanel;
-	private JScrollPane middlePanel;
+	private JPanel middlePanel;
 	private JPanel bottomPanel;
 	private JButton searchButton, deleteButton, exitButton, selectPathButton;
 	private JTextField pathTextField;
@@ -52,7 +53,7 @@ public class MainFrame extends JFrame {
         
         topPanel = new JPanel(new FlowLayout());
         topPanel.setVisible(true);
-        middlePanel = new JScrollPane();
+        middlePanel = new JPanel(new BorderLayout());
         middlePanel.setVisible(true);
         bottomPanel = new JPanel(new FlowLayout());
         bottomPanel.setVisible(true);
@@ -107,13 +108,20 @@ public class MainFrame extends JFrame {
 		return "|| "+sizeInByte/MBYTE+"MB "+(sizeInByte%MBYTE)/KBYTE+"KB "+((sizeInByte%MBYTE)%KBYTE)+"B";
 	}
 	
+	/**
+	 * Display result in GUI
+	 */
 	private void fillMiddlePanel(){
-		JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-        panel.setVisible(true);
-        middlePanel.add(panel);
+		JPanel directoriesPanel = new JPanel();
+		JScrollPane directoriesJsp = new JScrollPane(directoriesPanel);
+        directoriesPanel.setLayout(new BoxLayout(directoriesPanel, BoxLayout.PAGE_AXIS));
+        directoriesPanel.setVisible(true);
         
-        panel.add(new JLabel("Directories"));
+        JPanel filesPanel = new JPanel();
+        JScrollPane filesJsp = new JScrollPane(filesPanel);
+        filesPanel.setLayout(new BoxLayout(filesPanel, BoxLayout.PAGE_AXIS));
+        filesPanel.setVisible(true);
+        
         directoriesCheckBoxArray = new ArrayList<ArrayList<JCheckBox>>();
         for (int i=0; i<directoriesDuplicateArray.size(); i++) {
         	ArrayList<File> subArray = directoriesDuplicateArray.get(i).getDuplicateArray();
@@ -131,11 +139,9 @@ public class MainFrame extends JFrame {
         		tmpPanel.revalidate();
         	}
         	directoriesCheckBoxArray.add(tmpCheckBoxArray);
-        	panel.add(tmpPanel);
-        	//panel.revalidate();
+        	directoriesPanel.add(tmpPanel);
         }
         
-        panel.add(new JLabel("Files"));
         fileCheckBoxArray = new ArrayList<ArrayList<JCheckBox>>();
         for (int i=0; i<fileDuplicateArray.size(); i++) {
         	ArrayList<File> subArray = fileDuplicateArray.get(i);
@@ -152,13 +158,26 @@ public class MainFrame extends JFrame {
         		tmpPanel.revalidate();
         	}
         	fileCheckBoxArray.add(tmpCheckBoxArray);
-        	panel.add(tmpPanel);
-        	//panel.revalidate();
+        	filesPanel.add(tmpPanel);
         }
+        
+        JTabbedPane tabPanel = new JTabbedPane();
+		tabPanel.setVisible(true);
+        tabPanel.addTab("Directories", directoriesJsp);
+        tabPanel.addTab("Files", filesJsp);
+        JPanel statisticPanel = new JPanel();
+        statisticPanel.add(new JLabel("Statistic about duplicate directories and files"));
+        tabPanel.addTab("Info", statisticPanel);
 
-        middlePanel.setViewportView(panel);
+        middlePanel.removeAll();
+        middlePanel.add(tabPanel);
+        middlePanel.revalidate();
+        //middlePanel.setViewportView(tabPanel);
 	}
 	
+	/**
+	 * Display progress in GUI
+	 */
 	private void fillMiddlePanelWhileWait() {
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setIndeterminate(true);
@@ -168,9 +187,15 @@ public class MainFrame extends JFrame {
 		box.add(status);
 		box.add(progressBar);
 		
-		middlePanel.setViewportView(box);
+		middlePanel.removeAll();
+		middlePanel.add(box);
+		middlePanel.revalidate();
+		//middlePanel.setViewportView(box);
 	}
 	
+	/**
+	 * Delete checked items
+	 */
 	private void deleteSelectedDuplicate() {
 		for (int i=0; i<fileCheckBoxArray.size(); i++) {
 			ArrayList<JCheckBox> tmpCheckBoxArray = fileCheckBoxArray.get(i);

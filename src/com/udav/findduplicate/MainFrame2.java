@@ -2,7 +2,6 @@ package com.udav.findduplicate;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,27 +11,33 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
+import javax.swing.BoxLayout;
 import javax.swing.JTabbedPane;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.JButton;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
+import javax.swing.JProgressBar;
 
-public class MainFrame extends JFrame {
+import com.udav.findduplicate.MainFrame.ButtonAction;
+
+public class MainFrame2 extends JFrame {
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
 	
+	private JTextField pathTextField;
 	private JPanel topPanel;
-	private JPanel middlePanel;
+	private JTabbedPane middlePanel;
 	private JPanel bottomPanel;
 	private JButton searchButton, deleteButton, exitButton, selectPathButton;
-	private JTextField pathTextField;
-	private JTextField extensionTextField;
 	private JLabel status;
 	
 	private ArrayList<ArrayList<File>> fileDuplicateArray;
@@ -42,8 +47,14 @@ public class MainFrame extends JFrame {
 	private ArrayList<ArrayList<JCheckBox>> directoriesCheckBoxArray;
 	
 	private String statistic;
-	
-	public MainFrame() {
+	private JTextField extensionTextField;
+	private JScrollPane filesSP;
+	private JScrollPane directoriesSP;
+
+	/**
+	 * Create the frame.
+	 */
+	public MainFrame2() {
 		Toolkit kit = Toolkit.getDefaultToolkit() ;
         Dimension screenSize = kit.getScreenSize() ;
         int x = screenSize.width;
@@ -51,55 +62,77 @@ public class MainFrame extends JFrame {
         setBounds(x/4, y/4, 600, 600);
         setMinimumSize(new Dimension(600, 600));   
         setTitle("FindDuplicate");
-             
         
-        topPanel = new JPanel(new FlowLayout());
-        topPanel.setVisible(true);
-        middlePanel = new JPanel(new BorderLayout());
-        middlePanel.setVisible(true);
-        bottomPanel = new JPanel(new FlowLayout());
-        bottomPanel.setVisible(true);
+        JPanel firstPanel = new JPanel();
+        getContentPane().add(firstPanel, BorderLayout.CENTER);
+        firstPanel.setLayout(new BorderLayout(0, 0));
         
-        //create action
+        topPanel = new JPanel();
+        firstPanel.add(topPanel, BorderLayout.NORTH);
+        
+        JLabel pathLabel = new JLabel("Path:");
+        topPanel.add(pathLabel);
+        
+        pathTextField = new JTextField();
+        topPanel.add(pathTextField);
+        pathTextField.setColumns(10);
+        
         ButtonAction buttonAction = new ButtonAction();
-        
-        //Fill top panel
-        topPanel.add(new JLabel("Path: "));
+                
         selectPathButton = new JButton("...");
         selectPathButton.setPreferredSize(new Dimension(25, 25));
         selectPathButton.addActionListener(buttonAction);
-        pathTextField = new JTextField();
-        pathTextField.setPreferredSize(new Dimension(200, 25));
-        //pathTextField.setText("c:\\");
-        extensionTextField = new JTextField();
-        extensionTextField.setPreferredSize(new Dimension(100, 25));
-        extensionTextField.setText("*");
-        topPanel.add(pathTextField, null);
         topPanel.add(selectPathButton);
+        
+        extensionTextField = new JTextField();
+        extensionTextField.setText("*");
         topPanel.add(extensionTextField);
-                
-        //Fill bottom panel
+        extensionTextField.setColumns(10);
+        
+        middlePanel = new JTabbedPane(JTabbedPane.TOP);
+        firstPanel.add(middlePanel, BorderLayout.CENTER);
+        
+        filesSP = new JScrollPane();
+        filesSP.setVisible(true);
+        middlePanel.addTab("Files", null, filesSP, null);
+        
+        directoriesSP = new JScrollPane();
+        directoriesSP.setVisible(true);
+        middlePanel.addTab("Directories", null, directoriesSP, null);
+        
+        JPanel statisticPanel = new JPanel();
+        middlePanel.addTab("Statistic", null, statisticPanel, null);
+        
+        bottomPanel = new JPanel();
+        firstPanel.add(bottomPanel, BorderLayout.SOUTH);
+        
+        
         searchButton = new JButton("Search");
         searchButton.setPreferredSize(new Dimension(100, 25));
         searchButton.addActionListener(buttonAction);
+        bottomPanel.add(searchButton);
         deleteButton = new JButton("Delete");
         deleteButton.setPreferredSize(new Dimension(100, 25));
         deleteButton.addActionListener(buttonAction);
+        bottomPanel.add(deleteButton);
         exitButton = new JButton("Exit");
         exitButton.setPreferredSize(new Dimension(100, 25));
         exitButton.addActionListener(buttonAction);
-        bottomPanel.add(searchButton);
-        bottomPanel.add(deleteButton);
         bottomPanel.add(exitButton);
         
-        this.add(topPanel, BorderLayout.NORTH);
-        this.add(middlePanel, BorderLayout.CENTER);
-        this.add(bottomPanel, BorderLayout.SOUTH);
-        //this.add(new StatusBar(), BorderLayout.SOUTH);
-
+        JPanel secondPanel = new JPanel();
+        secondPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+        getContentPane().add(secondPanel, BorderLayout.SOUTH);
         
-        setVisible(true);
+        JLabel lblNewLabel_1 = new JLabel("New label");
+        secondPanel.add(lblNewLabel_1);
+        secondPanel.setLayout(new BoxLayout(secondPanel, BoxLayout.X_AXIS));
+        lblNewLabel_1.setHorizontalAlignment(SwingConstants.LEFT);
+        
+        JProgressBar progressBar = new JProgressBar();
+        secondPanel.add(progressBar);
 	}
+	
 	/**
 	 * Convert size from byte to mb,kb,byte
 	 * @param sizeInByte
@@ -117,12 +150,15 @@ public class MainFrame extends JFrame {
 	 */
 	private void fillMiddlePanel(){
 		JPanel directoriesPanel = new JPanel();
-		JScrollPane directoriesJsp = new JScrollPane(directoriesPanel);
+		directoriesSP.add(directoriesPanel);
+		directoriesSP.setViewportView(directoriesPanel);
         directoriesPanel.setLayout(new BoxLayout(directoriesPanel, BoxLayout.PAGE_AXIS));
         directoriesPanel.setVisible(true);
         
         JPanel filesPanel = new JPanel();
         JScrollPane filesJsp = new JScrollPane(filesPanel);
+        filesSP.add(filesPanel);
+        filesSP.setViewportView(filesPanel);
         filesPanel.setLayout(new BoxLayout(filesPanel, BoxLayout.PAGE_AXIS));
         filesPanel.setVisible(true);
         
@@ -164,17 +200,6 @@ public class MainFrame extends JFrame {
         	fileCheckBoxArray.add(tmpCheckBoxArray);
         	filesPanel.add(tmpPanel);
         }
-        
-        JTabbedPane tabPanel = new JTabbedPane();
-		tabPanel.setVisible(true);
-        tabPanel.addTab("Directories", directoriesJsp);
-        tabPanel.addTab("Files", filesJsp);
-        JPanel statisticPanel = new JPanel();
-        statisticPanel.add(new JLabel(statistic));
-        tabPanel.addTab("Info", statisticPanel);
-
-        middlePanel.removeAll();
-        middlePanel.add(tabPanel);
         middlePanel.revalidate();
         //middlePanel.setViewportView(tabPanel);
 	}
@@ -183,7 +208,7 @@ public class MainFrame extends JFrame {
 	 * Display progress in GUI
 	 */
 	private void fillMiddlePanelWhileWait() {
-		JProgressBar progressBar = new JProgressBar();
+	/*	JProgressBar progressBar = new JProgressBar();
 		progressBar.setIndeterminate(true);
 		status = new JLabel();
 		
@@ -193,7 +218,7 @@ public class MainFrame extends JFrame {
 		
 		middlePanel.removeAll();
 		middlePanel.add(box);
-		middlePanel.revalidate();
+		middlePanel.revalidate();*/
 		//middlePanel.setViewportView(box);
 	}
 	
@@ -257,8 +282,9 @@ public class MainFrame extends JFrame {
         		// запускаем поиск, сравнение файлов и вывод дубликатов
         		searchButton.setEnabled(false);
         		deleteButton.setEnabled(false);
+        		middlePanel.setEnabled(false);
 
-        		fillMiddlePanelWhileWait();
+        		//fillMiddlePanelWhileWait();
         		new Finder(pathTextField.getText(), extensionTextField.getText()){
         			@Override
         			protected void done() {
@@ -268,12 +294,13 @@ public class MainFrame extends JFrame {
         				fillMiddlePanel();
         				searchButton.setEnabled(true);
         				deleteButton.setEnabled(true);
+        				middlePanel.setEnabled(true);
         				super.done();
         			}
         			
         			@Override
         			protected void process(List<Object> chunks) {
-        				status.setText(chunks.get(0).toString());
+        				//status.setText(chunks.get(0).toString());
         				System.out.println("asdasd");
         				super.process(chunks);
         			}
@@ -288,4 +315,5 @@ public class MainFrame extends JFrame {
         	}
         }
     }
+
 }

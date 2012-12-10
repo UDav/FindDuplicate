@@ -9,7 +9,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 	
 	private ArrayList<File> fileArray = new ArrayList<File>();
 	private ArrayList<File> directoryArray = new ArrayList<File>();
-	private ArrayList<ArrayList<File>> resultArray = new ArrayList<ArrayList<File>>();
+	private ArrayList<ArrayList<File>> resultFilesArray = new ArrayList<ArrayList<File>>();
 	private ArrayList<DirectoriesDuplicateContainer> resultDirectoriesArray = new ArrayList<DirectoriesDuplicateContainer>();
 	private boolean notFirst = false;
 	private String pathList[];
@@ -194,13 +194,13 @@ public class Finder extends SwingWorker<Integer, Object>{
 			}
 			notFirst = false;
 			if (duplicateFileArray.size()>0)
-				resultArray.add(duplicateFileArray);
+				resultFilesArray.add(duplicateFileArray);
 		}
 		System.out.println("2 "+(System.currentTimeMillis() - start));
 	}
 	
 	public ArrayList<ArrayList<File>> getFileDuplicateArray() {
-		return resultArray;
+		return resultFilesArray;
 	}
 	
 	public ArrayList<DirectoriesDuplicateContainer> getDirectoriesDuplicateArray() {
@@ -208,6 +208,23 @@ public class Finder extends SwingWorker<Integer, Object>{
 	}
 
 
+	public String getStatistic() {
+		String result = "";
+		
+		int filesCounter = 0;
+		for (int i=0; i<resultFilesArray.size(); i++) {
+			filesCounter += resultFilesArray.get(i).size()-1;
+		}
+		result += "Дубликатов фалов: "+filesCounter;
+		
+		int directoriesCounter = 0;
+		for (int i=0; i<resultDirectoriesArray.size(); i++) {
+			directoriesCounter += resultDirectoriesArray.get(i).getDuplicateArray().size()-1;
+		}
+		result += "\r\nДубликатов директорий: "+directoriesCounter;
+		return result;
+	}
+	
 	@Override
 	protected Integer doInBackground() throws Exception {
 		publish("State 1 of 3: Collect files and directories!");

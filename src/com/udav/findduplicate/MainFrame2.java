@@ -25,8 +25,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.JProgressBar;
 
-import com.udav.findduplicate.MainFrame.ButtonAction;
-
 public class MainFrame2 extends JFrame {
 	/**
 	 * 
@@ -39,6 +37,7 @@ public class MainFrame2 extends JFrame {
 	private JPanel bottomPanel;
 	private JButton searchButton, deleteButton, exitButton, selectPathButton;
 	private JLabel status;
+	private JProgressBar progressBar;
 	
 	private ArrayList<ArrayList<File>> fileDuplicateArray;
 	private ArrayList<ArrayList<JCheckBox>> fileCheckBoxArray;
@@ -124,12 +123,12 @@ public class MainFrame2 extends JFrame {
         secondPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
         getContentPane().add(secondPanel, BorderLayout.SOUTH);
         
-        JLabel lblNewLabel_1 = new JLabel("New label");
-        secondPanel.add(lblNewLabel_1);
+        status = new JLabel("State ");
+        secondPanel.add(status);
         secondPanel.setLayout(new BoxLayout(secondPanel, BoxLayout.X_AXIS));
-        lblNewLabel_1.setHorizontalAlignment(SwingConstants.LEFT);
+        status.setHorizontalAlignment(SwingConstants.LEFT);
         
-        JProgressBar progressBar = new JProgressBar();
+        progressBar = new JProgressBar();
         secondPanel.add(progressBar);
 	}
 	
@@ -156,7 +155,6 @@ public class MainFrame2 extends JFrame {
         directoriesPanel.setVisible(true);
         
         JPanel filesPanel = new JPanel();
-        JScrollPane filesJsp = new JScrollPane(filesPanel);
         filesSP.add(filesPanel);
         filesSP.setViewportView(filesPanel);
         filesPanel.setLayout(new BoxLayout(filesPanel, BoxLayout.PAGE_AXIS));
@@ -208,9 +206,7 @@ public class MainFrame2 extends JFrame {
 	 * Display progress in GUI
 	 */
 	private void fillMiddlePanelWhileWait() {
-	/*	JProgressBar progressBar = new JProgressBar();
 		progressBar.setIndeterminate(true);
-		status = new JLabel();
 		
 		Box box = Box.createVerticalBox();
 		box.add(status);
@@ -218,7 +214,7 @@ public class MainFrame2 extends JFrame {
 		
 		middlePanel.removeAll();
 		middlePanel.add(box);
-		middlePanel.revalidate();*/
+		middlePanel.revalidate();
 		//middlePanel.setViewportView(box);
 	}
 	
@@ -285,6 +281,7 @@ public class MainFrame2 extends JFrame {
         		middlePanel.setEnabled(false);
 
         		//fillMiddlePanelWhileWait();
+        		progressBar.setIndeterminate(true);
         		new Finder(pathTextField.getText(), extensionTextField.getText()){
         			@Override
         			protected void done() {
@@ -296,12 +293,14 @@ public class MainFrame2 extends JFrame {
         				deleteButton.setEnabled(true);
         				middlePanel.setEnabled(true);
         				super.done();
+        				progressBar.setIndeterminate(false);
+        				status.setText("Finish");
         			}
         			
         			@Override
         			protected void process(List<Object> chunks) {
-        				//status.setText(chunks.get(0).toString());
-        				System.out.println("asdasd");
+        				status.setText(chunks.get(0).toString());
+        				//System.out.println("asdasd");
         				super.process(chunks);
         			}
         		}.execute();

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -52,6 +51,7 @@ public class MainFrame extends JFrame {
 
 	private JPanel directoriesPanel;
     private JPanel filesPanel; 
+    private JPanel statisticPanel;
 	
 	/**
 	 * Create the frame.
@@ -102,8 +102,10 @@ public class MainFrame extends JFrame {
         filesSP.setVisible(true);
         middlePanel.addTab("Files", null, filesSP, null);
                 
-        JPanel statisticPanel = new JPanel();
+        statisticPanel = new JPanel();
+        statisticPanel.setVisible(true);
         middlePanel.addTab("Statistic", null, statisticPanel, null);
+        
         
         bottomPanel = new JPanel();
         firstPanel.add(bottomPanel, BorderLayout.SOUTH);
@@ -132,6 +134,8 @@ public class MainFrame extends JFrame {
         status.setHorizontalAlignment(SwingConstants.LEFT);
         
         progressBar = new JProgressBar();
+        progressBar.setStringPainted(true);
+		progressBar.setMaximum(100);
         secondPanel.add(progressBar);
         
         setVisible(true);
@@ -208,22 +212,6 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * Display progress in GUI
-	 */
-	private void fillMiddlePanelWhileWait() {
-		progressBar.setIndeterminate(true);
-		
-		Box box = Box.createVerticalBox();
-		box.add(status);
-		box.add(progressBar);
-		
-		middlePanel.removeAll();
-		middlePanel.add(box);
-		middlePanel.revalidate();
-		//middlePanel.setViewportView(box);
-	}
-	
-	/**
 	 * Delete checked items
 	 */
 	private void deleteSelectedDuplicate() {
@@ -285,7 +273,6 @@ public class MainFrame extends JFrame {
         		deleteButton.setEnabled(false);
         		middlePanel.setEnabled(false);
 
-        		//fillMiddlePanelWhileWait();
         		progressBar.setIndeterminate(true);
         		if ((directoriesPanel != null) || (filesPanel != null)) {
         			directoriesPanel.removeAll();
@@ -297,18 +284,27 @@ public class MainFrame extends JFrame {
         				fileDuplicateArray = this.getFileDuplicateArray();
         				directoriesDuplicateArray = this.getDirectoriesDuplicateArray();
         				statistic = this.getStatistic();
+        				statisticPanel.add(new JLabel(statistic));
+        				statisticPanel.revalidate();
+        				
         				fillMiddlePanel();
         				searchButton.setEnabled(true);
         				deleteButton.setEnabled(true);
         				middlePanel.setEnabled(true);
-        				super.done();
         				progressBar.setIndeterminate(false);
-        				status.setText("Finish");
+        				progressBar.setValue(100);
+        				status.setText("Finish! ");
+        				super.done();
         			}
         			
         			@Override
         			protected void process(List<Object> chunks) {
         				status.setText(chunks.get(0).toString());
+        				
+        				if (chunks.size() > 1){
+        					progressBar.setIndeterminate(false);
+        					progressBar.setValue(Integer.parseInt(chunks.get(1).toString()));
+        				}
         				super.process(chunks);
         			}
         		}.execute();

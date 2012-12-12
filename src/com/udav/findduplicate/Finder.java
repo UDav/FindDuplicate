@@ -20,7 +20,22 @@ public class Finder extends SwingWorker<Integer, Object>{
 		this.extensions = extension.split(";");
 	}
 	
-	
+	// global progress
+	private int progress = 0;
+	/**
+	 * 
+	 * @param currenPos - current position in array
+	 * @param arraySize - size array
+	 * @param note - description operation
+	 */
+	private void calculataAndPublishProgress(int currenPos, int arraySize, String note) {
+		int current_progress = (int)(((float)(currenPos+1)/(float)arraySize)*100);
+		if (current_progress > progress){
+			progress = current_progress;
+			publish(note, progress);
+		}
+	}
+		
 	/**
 	 * Search all files and add to array 
 	 * @param path - selected directory
@@ -129,19 +144,20 @@ public class Finder extends SwingWorker<Integer, Object>{
 	 * Compare size and content directory
 	 */
 	private void compareDirectories() {
+		progress = 0;
 		long start = System.currentTimeMillis();
 		// create array and fill him directories size
 		ArrayList<Long> sizes = new ArrayList<Long>();
 		for (int i=0; i<directoryArray.size(); i++) {
+			calculataAndPublishProgress(i, directoryArray.size(), "State 2 of 4: Calculate directories size! ");
 			sizes.add(getDirectorySize(directoryArray.get(i).getAbsolutePath()));
 		}
-		
+		progress = 0;
 		for (int i=0; i<directoryArray.size(); i++) {
 			ArrayList<File> duplicateDirectory = new ArrayList<File>();
 			for (int j=(i+1); j<directoryArray.size(); j++) {
 				if ( 
-						/*(i!=j) 
-						&&*/ (sizes.get(i).equals(sizes.get(j)))
+						(sizes.get(i).equals(sizes.get(j)))
 						&& (sizes.get(i) > 0)
 						&& (compateDirectoriesContent(directoryArray.get(i), directoryArray.get(j)))
 						&& (!isAlreadyAdded(directoryArray.get(i)))
@@ -149,11 +165,9 @@ public class Finder extends SwingWorker<Integer, Object>{
 					if (!notFirst) {
 						duplicateDirectory.add(directoryArray.get(i));
 						duplicateDirectory.add(directoryArray.get(j));
-						//directoryArray.remove(j); sizes.remove(j); j--;
 						notFirst = true;
 					} else {
 						duplicateDirectory.add(directoryArray.get(j));
-						//directoryArray.remove(j); sizes.remove(j); j--;
 					}
 				}
 			}
@@ -161,6 +175,9 @@ public class Finder extends SwingWorker<Integer, Object>{
 			if (duplicateDirectory.size() > 0){
 				resultDirectoriesArray.add(new DirectoriesDuplicateContainer(duplicateDirectory, sizes.get(i)));
 			}
+			
+			calculataAndPublishProgress(i, directoryArray.size(), "State 3 of 4: Find duplicate directories! ");
+			
 		}
 		System.out.println("1 "+(System.currentTimeMillis() - start));
 	}
@@ -170,13 +187,12 @@ public class Finder extends SwingWorker<Integer, Object>{
 	 * If found duplicate add to resultArray
 	 */
 	private void compareFiles() {
+		progress = 0;
 		long start = System.currentTimeMillis();
 		for (int i=0; i<fileArray.size(); i++) {
 			ArrayList<File> duplicateFileArray = new ArrayList<File>();		
 			for (int j=(i+1); j<fileArray.size(); j++) {
 				if (
-						/*(j!=i)
-						&& */
 						(fileArray.get(i).getName().equals(fileArray.get(j).getName()))
 						&& (fileArray.get(i).length() == fileArray.get(j).length())
 						&& (!isAlreadyAdded(fileArray.get(i)))
@@ -184,17 +200,17 @@ public class Finder extends SwingWorker<Integer, Object>{
 					if (!notFirst) {
 						duplicateFileArray.add(fileArray.get(i));
 						duplicateFileArray.add(fileArray.get(j));
-						//fileArray.remove(j); j--;
 						notFirst = true;
 					} else {
 						duplicateFileArray.add(fileArray.get(j));
-						//fileArray.remove(j); j--;
 					}
 				}
 			}
 			notFirst = false;
 			if (duplicateFileArray.size()>0)
 				resultFilesArray.add(duplicateFileArray);
+			
+			calculataAndPublishProgress(i, fileArray.size(), "State 4 of 4: Find duplicate files! ");
 		}
 		System.out.println("2 "+(System.currentTimeMillis() - start));
 	}
@@ -227,14 +243,12 @@ public class Finder extends SwingWorker<Integer, Object>{
 	
 	@Override
 	protected Integer doInBackground() throws Exception {
-		publish("State 1 of 3: Collect files and directories!");
+		publish("State 1 of 4: Collect files and directories! ");
 		for (int i=0; i<pathList.length; i++)
 			find(pathList[i]);
-		
-		publish("State 2 of 3: Find duplicate directories!");
+
 		compareDirectories();
-		
-		publish("State 3 of 3: Find duplicate files!");
+
 		compareFiles();	
 		
 		// Output duplicates files

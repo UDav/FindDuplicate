@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
@@ -23,6 +24,9 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.JProgressBar;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 public class MainFrame extends JFrame {
 	/**
@@ -45,13 +49,21 @@ public class MainFrame extends JFrame {
 	private ArrayList<ArrayList<JCheckBox>> directoriesCheckBoxArray;
 	
 	private String statistic;
-	private JTextField extensionTextField;
 	private JScrollPane filesSP;
 	private JScrollPane directoriesSP;
 
 	private JPanel directoriesPanel;
     private JPanel filesPanel; 
     private JPanel statisticPanel;
+    private JMenuBar menuBar;
+    private JMenu mnFile;
+    private JMenuItem mntmSearch;
+    private JMenuItem mntmExit;
+    private JMenu mnNewMenu;
+    private JMenuItem mntmAbout;
+    private JMenuItem mntmSettings;
+    
+    private SettingsDialog settingsDialog;
 	
 	/**
 	 * Create the frame.
@@ -71,11 +83,14 @@ public class MainFrame extends JFrame {
         
         topPanel = new JPanel();
         firstPanel.add(topPanel, BorderLayout.NORTH);
+        topPanel.setLayout(new BorderLayout(0, 0));
         
-        JLabel pathLabel = new JLabel("Path:");
-        topPanel.add(pathLabel);
+        JLabel pathLabel = new JLabel(" Path:  ");
+        pathLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        topPanel.add(pathLabel, BorderLayout.WEST);
         
         pathTextField = new JTextField();
+        pathTextField.setHorizontalAlignment(SwingConstants.LEFT);
         topPanel.add(pathTextField);
         pathTextField.setColumns(10);
         
@@ -84,12 +99,7 @@ public class MainFrame extends JFrame {
         selectPathButton = new JButton("...");
         selectPathButton.setPreferredSize(new Dimension(25, 25));
         selectPathButton.addActionListener(buttonAction);
-        topPanel.add(selectPathButton);
-        
-        extensionTextField = new JTextField();
-        extensionTextField.setText("*");
-        topPanel.add(extensionTextField);
-        extensionTextField.setColumns(10);
+        topPanel.add(selectPathButton, BorderLayout.EAST);
         
         middlePanel = new JTabbedPane(JTabbedPane.TOP);
         firstPanel.add(middlePanel, BorderLayout.CENTER);
@@ -127,16 +137,47 @@ public class MainFrame extends JFrame {
         JPanel secondPanel = new JPanel();
         secondPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
         getContentPane().add(secondPanel, BorderLayout.SOUTH);
+        secondPanel.setLayout(new BorderLayout(0, 0));
         
         status = new JLabel("State ");
-        secondPanel.add(status);
-        secondPanel.setLayout(new BoxLayout(secondPanel, BoxLayout.X_AXIS));
+        secondPanel.add(status, BorderLayout.WEST);
         status.setHorizontalAlignment(SwingConstants.LEFT);
         
         progressBar = new JProgressBar();
         progressBar.setStringPainted(true);
 		progressBar.setMaximum(100);
-        secondPanel.add(progressBar);
+        secondPanel.add(progressBar, BorderLayout.EAST);
+        
+        menuBar = new JMenuBar();
+        getContentPane().add(menuBar, BorderLayout.NORTH);
+        
+        mnFile = new JMenu("File");
+        menuBar.add(mnFile);
+        
+        mntmSearch = new JMenuItem("Search");
+        mnFile.add(mntmSearch);
+        
+        mntmSettings = mnFile.add(new AbstractAction("Settings") {
+			private static final long serialVersionUID = 1L;
+			public void actionPerformed(ActionEvent e) {
+            	if (settingsDialog != null)
+            		settingsDialog.setVisible(true);
+            	else
+            		settingsDialog = new SettingsDialog();
+            }
+        });
+            	
+            	
+        //mnFile.add(mntmSettings);
+        
+        mntmExit = new JMenuItem("Exit");
+        mnFile.add(mntmExit);
+        
+        mnNewMenu = new JMenu("Help");
+        menuBar.add(mnNewMenu);
+        
+        mntmAbout = new JMenuItem("About");
+        mnNewMenu.add(mntmAbout);
         
         setVisible(true);
 	}
@@ -278,7 +319,10 @@ public class MainFrame extends JFrame {
         			directoriesPanel.removeAll();
         			filesPanel.removeAll();
         		}
-        		new Finder(pathTextField.getText(), extensionTextField.getText()){
+        		String extensions = "";
+        		if (settingsDialog != null) extensions = settingsDialog.getExtensions();
+        		if (extensions.equals("")) extensions = "*";
+        		new Finder(pathTextField.getText(), extensions/*extensionTextField.getText()*/){
         			@Override
         			protected void done() {
         				fileDuplicateArray = this.getFileDuplicateArray();

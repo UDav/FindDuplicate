@@ -245,6 +245,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 	protected Integer doInBackground() throws Exception {
 		publish("State 1 of 4: Collect files and directories! ");
 		for (int i=0; i<pathList.length; i++)
+			//проверять не является ли одна папка подпапкой другой
 			find(pathList[i]);
 
 		compareDirectories();

@@ -29,9 +29,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 public class MainFrame extends JFrame {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	
 	private JTextField pathTextField;
@@ -322,7 +320,7 @@ public class MainFrame extends JFrame {
         		String extensions = "";
         		if (settingsDialog != null) extensions = settingsDialog.getExtensions();
         		if (extensions.equals("")) extensions = "*";
-        		new Finder(pathTextField.getText(), extensions/*extensionTextField.getText()*/){
+        		new Finder(pathTextField.getText(), extensions){
         			@Override
         			protected void done() {
         				fileDuplicateArray = this.getFileDuplicateArray();

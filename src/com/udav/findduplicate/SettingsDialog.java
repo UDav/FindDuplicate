@@ -13,12 +13,9 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JCheckBox;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.RowSpec;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class SettingsDialog extends JDialog {
 
@@ -50,41 +47,18 @@ public class SettingsDialog extends JDialog {
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("199px"),
-				ColumnSpec.decode("233px:grow"),
-				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-				ColumnSpec.decode("137px"),
-				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-				ColumnSpec.decode("215px"),},
-			new RowSpec[] {
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				RowSpec.decode("23px"),
-				RowSpec.decode("23px"),
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.UNRELATED_GAP_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.LINE_GAP_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,}));
+		contentPanel.setLayout(null);
 		{
 			rdbtnSearchFileOnly = new JRadioButton("Search file only this extension:");
-			contentPanel.add(rdbtnSearchFileOnly, "1, 2");
+			rdbtnSearchFileOnly.setBounds(5, 28, 199, 23);
+			contentPanel.add(rdbtnSearchFileOnly);
 		}
 		
 		{
 			rdbtnSearchAllFiles = new JRadioButton("Search all files");
+			rdbtnSearchAllFiles.setBounds(5, 5, 199, 23);
 			rdbtnSearchAllFiles.setSelected(true);
-			contentPanel.add(rdbtnSearchAllFiles, "1, 1");
+			contentPanel.add(rdbtnSearchAllFiles);
 		}
 		
 		ButtonGroup group = new ButtonGroup();
@@ -98,28 +72,35 @@ public class SettingsDialog extends JDialog {
 		
 		{
 			chckbxDocuments = new JCheckBox("documents(doc;xls;txt)");
+			chckbxDocuments.setHorizontalAlignment(SwingConstants.LEFT);
+			chckbxDocuments.setBounds(15, 49, 189, 23);
 			chckbxDocuments.setEnabled(false);
-			contentPanel.add(chckbxDocuments, "1, 3, left, top");
+			contentPanel.add(chckbxDocuments);
 		}
 		{
 			chckbxVideo = new JCheckBox("video files(avi;mov;mkv)");
+			chckbxVideo.setBounds(15, 72, 189, 23);
 			chckbxVideo.setEnabled(false);
-			contentPanel.add(chckbxVideo, "1, 4, left, top");
+			contentPanel.add(chckbxVideo);
 		}
 		{
 			chckbxPictures = new JCheckBox("pictures(jpg;gif;bmp;png)");
+			chckbxPictures.setBounds(15, 95, 189, 23);
 			chckbxPictures.setEnabled(false);
-			contentPanel.add(chckbxPictures, "1, 5, left, top");
+			contentPanel.add(chckbxPictures);
 		}
 		{
 			chckbxOther = new JCheckBox("Other");
+			chckbxOther.setHorizontalAlignment(SwingConstants.LEFT);
+			chckbxOther.setBounds(15, 118, 189, 23);
 			chckbxOther.setEnabled(false);
-			contentPanel.add(chckbxOther, "1, 6, left, top");
+			contentPanel.add(chckbxOther);
 		}
 		{
 			textFieldExtensions = new JTextField();
+			textFieldExtensions.setBounds(204, 121, 233, 20);
 			textFieldExtensions.setEnabled(false);
-			contentPanel.add(textFieldExtensions, "2, 6, fill, default");
+			contentPanel.add(textFieldExtensions);
 			textFieldExtensions.setColumns(10);
 		}
 		
@@ -135,15 +116,24 @@ public class SettingsDialog extends JDialog {
 					public void actionPerformed(ActionEvent arg0) {
 						extensions = "";
 						// тут будут траблы с точкозапятой )
-						if (chckbxDocuments.isSelected())
-							extensions += "doc;txt;docx;odt;xls;";
-						if (chckbxPictures.isSelected())
-							extensions += "jpg;png;bmp;";
-						if (chckbxVideo.isSelected())
+						if (chckbxDocuments.isSelected()){
+							extensions = addSemicolon(extensions);
+							extensions += "doc;txt;docx;odt;xls";
+						}
+						if (chckbxPictures.isSelected()){
+							extensions = addSemicolon(extensions);
+							extensions += "jpg;png;bmp";
+						}
+						if (chckbxVideo.isSelected()){
+							extensions = addSemicolon(extensions);
 							extensions += "avi;mov;mkv";
+						}
 						//нужно проверять содержание текстового поля
-						if (chckbxOther.isSelected())
+						if (chckbxOther.isSelected()){
+							extensions = addSemicolon(extensions);
 							extensions += textFieldExtensions.getText();
+						}
+						System.out.println(extensions);
 						setVisible(false);
 					}
 				});
@@ -165,6 +155,13 @@ public class SettingsDialog extends JDialog {
 		
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setVisible(true);
+	}
+	
+	private String addSemicolon(String str) {
+		if ((str.length() > 0) && (str.charAt(str.length()-1) != ';')) {
+			str += ";";
+		}
+		return str;
 	}
 	
 	public String getExtensions() {

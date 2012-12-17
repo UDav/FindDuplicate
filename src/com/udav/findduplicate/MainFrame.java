@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -18,7 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.BoxLayout;
 import javax.swing.JTabbedPane;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
@@ -27,12 +27,13 @@ import javax.swing.JProgressBar;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JList;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
 
 public class MainFrame extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
-	
-	private JTextField pathTextField;
 	private JPanel topPanel;
 	private JTabbedPane middlePanel;
 	private JPanel bottomPanel;
@@ -62,6 +63,10 @@ public class MainFrame extends JFrame {
     private JMenuItem mntmSettings;
     
     private SettingsDialog settingsDialog;
+    private JList pathList;
+    private DefaultListModel listModel;
+    private JPanel pathButtonPanel;
+    private JButton pathDel;
 	
 	/**
 	 * Create the frame.
@@ -87,17 +92,29 @@ public class MainFrame extends JFrame {
         pathLabel.setHorizontalAlignment(SwingConstants.LEFT);
         topPanel.add(pathLabel, BorderLayout.WEST);
         
-        pathTextField = new JTextField();
-        pathTextField.setHorizontalAlignment(SwingConstants.LEFT);
-        topPanel.add(pathTextField);
-        pathTextField.setColumns(10);
-        
         ButtonAction buttonAction = new ButtonAction();
-                
-        selectPathButton = new JButton("...");
-        selectPathButton.setPreferredSize(new Dimension(25, 25));
+        
+        listModel = new DefaultListModel();
+        pathList = new JList(listModel);
+        pathList.setBorder(new LineBorder(new Color(0, 0, 0)));
+        pathList.setVisibleRowCount(3);
+        topPanel.add(new JScrollPane(pathList), BorderLayout.CENTER);
+        
+        pathButtonPanel = new JPanel();
+        topPanel.add(pathButtonPanel, BorderLayout.EAST);
+        pathButtonPanel.setLayout(new BoxLayout(pathButtonPanel, BoxLayout.PAGE_AXIS));
+        //pathButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        
+        selectPathButton = new JButton("Add");
+        pathButtonPanel.add(selectPathButton);
+        //selectPathButton.setPreferredSize(new Dimension(80, 25));
         selectPathButton.addActionListener(buttonAction);
-        topPanel.add(selectPathButton, BorderLayout.EAST);
+        
+        pathDel = new JButton("Del");
+        pathButtonPanel.add(pathDel);
+        //pathDel.setPreferredSize(new Dimension(80, 25));
+        pathDel.addActionListener(buttonAction);
+        
         
         middlePanel = new JTabbedPane(JTabbedPane.TOP);
         firstPanel.add(middlePanel, BorderLayout.CENTER);
@@ -301,11 +318,42 @@ public class MainFrame extends JFrame {
             	choosFolder.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				int ret = choosFolder.showDialog(null, "Select");				
 				if (ret == JFileChooser.APPROVE_OPTION) {
-					if (!pathTextField.getText().equals(""))
+
+					boolean isAdd = false;
+					for (int i=0; i<listModel.size(); i++) {
+						File f = new File(choosFolder.getSelectedFile().getAbsolutePath());
+						while (f != null) {
+							if (f.getAbsolutePath().equals(listModel.get(i).toString())) {
+								isAdd = true;
+							}
+						f = f.getParentFile();
+						}
+					}
+					
+					for (int i=0; i<listModel.size(); i++) {
+						File f = new File(listModel.get(i).toString());
+						while (f != null) {
+							if (f.getAbsolutePath().equals(choosFolder.getSelectedFile().getAbsolutePath())) {
+								isAdd = true;
+							}
+						f = f.getParentFile();
+						}
+					}
+					
+					if (!isAdd) {
+						listModel.addElement(choosFolder.getSelectedFile().getAbsolutePath());
+					}
+					/*if (!pathTextField.getText().equals(""))
 						pathTextField.setText(pathTextField.getText()+";"+choosFolder.getSelectedFile().getAbsolutePath());
-					else pathTextField.setText(choosFolder.getSelectedFile().getAbsolutePath());
+					else pathTextField.setText(choosFolder.getSelectedFile().getAbsolutePath());*/
 				}
         	}
+        	
+        	if (event.getSource() == pathDel) {
+        		if (!pathList.isSelectionEmpty())
+        			listModel.remove(pathList.getSelectedIndex());
+        	}
+        	
         	if (event.getSource() == searchButton) {
         		// запускаем поиск, сравнение файлов и вывод дубликатов
         		searchButton.setEnabled(false);
@@ -320,7 +368,12 @@ public class MainFrame extends JFrame {
         		String extensions = "";
         		if (settingsDialog != null) extensions = settingsDialog.getExtensions();
         		if (extensions.equals("")) extensions = "*";
-        		new Finder(pathTextField.getText(), extensions){
+        		
+        		File pathArray[] = new File[listModel.size()];
+        		for (int i=0; i<listModel.size(); i++)
+        			pathArray[i] = new File(listModel.get(i).toString());
+        		
+        		new Finder(pathArray, extensions){
         			@Override
         			protected void done() {
         				fileDuplicateArray = this.getFileDuplicateArray();

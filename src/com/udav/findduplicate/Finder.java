@@ -12,11 +12,11 @@ public class Finder extends SwingWorker<Integer, Object>{
 	private ArrayList<ArrayList<File>> resultFilesArray = new ArrayList<ArrayList<File>>();
 	private ArrayList<DirectoriesDuplicateContainer> resultDirectoriesArray = new ArrayList<DirectoriesDuplicateContainer>();
 	private boolean notFirst = false;
-	private String pathList[];
 	private String extensions[];
+	private File pathArray[];
 
-	public Finder(String pathToFolder, String extension) {
-		pathList = pathToFolder.split(";");
+	public Finder(File pathArray[], String extension) {
+		this.pathArray = pathArray;
 		this.extensions = extension.split(";");
 	}
 	
@@ -29,20 +29,20 @@ public class Finder extends SwingWorker<Integer, Object>{
 	 * @param note - description operation
 	 */
 	private void calculataAndPublishProgress(int currenPos, int arraySize, String note) {
-		int current_progress = (int)(((float)(currenPos+1)/(float)arraySize)*100);
-		if (current_progress > progress){
-			progress = current_progress;
+		int currentProgress = (int)(((float)(currenPos+1)/(float)arraySize)*100);
+		if (currentProgress > progress){
+			progress = currentProgress;
 			publish(note, progress);
 		}
 	}
 		
 	/**
 	 * Search all files and add to array 
-	 * @param path - selected directory
+	 * @param f - selected directory
 	 */
-	private void find(String path) {
-		ArrayList<String> tmp = new ArrayList<String>();
-		File fileList[] = new File(path).listFiles();
+	private void find(File f) {
+		ArrayList<File> tmp = new ArrayList<File>();
+		File fileList[] = f.listFiles();
 		for (int i=0; i<fileList.length; i++) {
 			if (fileList[i].isFile()) {
 				if (extensions[0].equals("*")) {
@@ -61,7 +61,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 				} 
 			}
 			if (fileList[i].isDirectory() && !fileList[i].isHidden() && fileList[i].canExecute() && fileList[i].canRead()) {
-				tmp.add(fileList[i].getAbsolutePath());
+				tmp.add(fileList[i]);
 				//collect directories
 				directoryArray.add(fileList[i]);
 			}
@@ -111,8 +111,8 @@ public class Finder extends SwingWorker<Integer, Object>{
 	 * @return
 	 */
 	private boolean comparePath(String path) {
-		for (int i=0; i<pathList.length; i++) {
-			if (path.equals(pathList[i])) return true;
+		for (int i=0; i<pathArray.length; i++) {
+			if (path.equals(pathArray[i].getAbsolutePath())) return true;
 		}
 		return false;
 	}
@@ -244,9 +244,10 @@ public class Finder extends SwingWorker<Integer, Object>{
 	@Override
 	protected Integer doInBackground() throws Exception {
 		publish("State 1 of 4: Collect files and directories! ");
-		for (int i=0; i<pathList.length; i++)
-			//проверять не является ли одна папка подпапкой другой
-			find(pathList[i]);
+
+		for (int i=0; i<pathArray.length; i++){
+			find(pathArray[i]);
+		}
 
 		compareDirectories();
 

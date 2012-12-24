@@ -1,6 +1,9 @@
 package com.udav.findduplicate;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import javax.swing.SwingWorker;
@@ -44,7 +47,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 		ArrayList<File> tmp = new ArrayList<File>();
 		File fileList[] = f.listFiles();
 		for (int i=0; i<fileList.length; i++) {
-			if (fileList[i].isFile()) {
+			if ( (fileList[i].isFile()) && (fileList[i].canRead()) && (!fileList[i].isHidden()) ) {
 				if (extensions[0].equals("*")) {
 					// collect all files
 					fileArray.add(fileList[i]);
@@ -60,7 +63,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 					}
 				} 
 			}
-			if (fileList[i].isDirectory() && !fileList[i].isHidden() && fileList[i].canExecute() && fileList[i].canRead()) {
+			if ( (fileList[i].isDirectory()) && (!fileList[i].isHidden()) && (fileList[i].canExecute()) && (fileList[i].canRead()) ) {
 				tmp.add(fileList[i]);
 				//collect directories
 				directoryArray.add(fileList[i]);
@@ -183,6 +186,61 @@ public class Finder extends SwingWorker<Integer, Object>{
 	}
 	
 	/**
+	 * Load byte from file into byte array 
+	 * @param file
+	 * @return byte array
+	 * @throws IOException
+	 */
+	private byte[] getBytesFromFile(File file) throws IOException {
+	    // разобраться в этом методе... неправильно работает с большими файлами?
+		InputStream is = new FileInputStream(file);
+	    long length = file.length();
+	    if (length > Integer.MAX_VALUE) {
+	        return null;
+	    }
+	    byte[] bytes = new byte[(int)length];
+	    // Read in the bytes
+	    int offset = 0;
+	    int numRead = 0;
+	    while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+	        offset += numRead;
+	    }
+	    // Ensure all the bytes have been read in
+	    if (offset < bytes.length) {
+	        throw new IOException("Could not completely read file "+file.getName());
+	    }
+	    // Close the input stream and return bytes
+	    is.close();
+	    return bytes;
+	}
+	
+	/**
+	 * Compare content two file
+	 * @param first
+	 * @param second
+	 * @return true - if files equals; false - if file not equals
+	 */
+	private boolean compareContentFile(File first, File second) {
+		byte firstArray[] = new byte[1];
+		byte secondArray[] = new byte[1];
+		try{
+			firstArray = getBytesFromFile(first);
+			secondArray = getBytesFromFile(second);
+		} catch(Exception e) {
+			System.out.println("exception!");
+			e.printStackTrace();
+		}
+		
+		if (firstArray.length == secondArray.length)
+			for (int i=0; i<firstArray.length; i++) {
+				if (firstArray[i] != secondArray[i]) return false;
+			}
+		else return false;
+		
+		return true;
+	}
+	
+	/**
 	 * Compare name and size all files
 	 * If found duplicate add to resultArray
 	 */
@@ -196,6 +254,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 						(fileArray.get(i).getName().equals(fileArray.get(j).getName()))
 						&& (fileArray.get(i).length() == fileArray.get(j).length())
 						&& (!isAlreadyAdded(fileArray.get(i)))
+						//&& (compareContentFile(fileArray.get(i), fileArray.get(j)))
 						) {
 					if (!notFirst) {
 						duplicateFileArray.add(fileArray.get(i));

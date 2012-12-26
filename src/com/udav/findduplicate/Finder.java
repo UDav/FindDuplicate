@@ -36,6 +36,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 		if (currentProgress > progress){
 			progress = currentProgress;
 			publish(note, progress);
+			setProgress(progress);
 		}
 	}
 		
@@ -157,6 +158,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 		}
 		progress = 0;
 		for (int i=0; i<directoryArray.size(); i++) {
+			calculataAndPublishProgress(i, directoryArray.size(), "State 3 of 4: Find duplicate directories! ");
 			ArrayList<File> duplicateDirectory = new ArrayList<File>();
 			for (int j=(i+1); j<directoryArray.size(); j++) {
 				if ( 
@@ -179,39 +181,9 @@ public class Finder extends SwingWorker<Integer, Object>{
 				resultDirectoriesArray.add(new DirectoriesDuplicateContainer(duplicateDirectory, sizes.get(i)));
 			}
 			
-			calculataAndPublishProgress(i, directoryArray.size(), "State 3 of 4: Find duplicate directories! ");
 			
 		}
 		System.out.println("1 "+(System.currentTimeMillis() - start));
-	}
-	
-	/**
-	 * Load byte from file into byte array 
-	 * @param file
-	 * @return byte array
-	 * @throws IOException
-	 */
-	private byte[] getBytesFromFile(File file) throws IOException {
-	    // разобраться в этом методе... неправильно работает с большими файлами?
-		InputStream is = new FileInputStream(file);
-	    long length = file.length();
-	    if (length > Integer.MAX_VALUE) {
-	        return null;
-	    }
-	    byte[] bytes = new byte[(int)length];
-	    // Read in the bytes
-	    int offset = 0;
-	    int numRead = 0;
-	    while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-	        offset += numRead;
-	    }
-	    // Ensure all the bytes have been read in
-	    if (offset < bytes.length) {
-	        throw new IOException("Could not completely read file "+file.getName());
-	    }
-	    // Close the input stream and return bytes
-	    is.close();
-	    return bytes;
 	}
 	
 	/**
@@ -221,22 +193,26 @@ public class Finder extends SwingWorker<Integer, Object>{
 	 * @return true - if files equals; false - if file not equals
 	 */
 	private boolean compareContentFile(File first, File second) {
-		byte firstArray[] = new byte[1];
-		byte secondArray[] = new byte[1];
+		int size = 1024;
+		if (first.length() < size) size = (int)first.length(); 
+		byte firstArray[] = new byte[size];
+		byte secondArray[] = new byte[size];
+
 		try{
-			firstArray = getBytesFromFile(first);
-			secondArray = getBytesFromFile(second);
-		} catch(Exception e) {
-			System.out.println("exception!");
-			e.printStackTrace();
-		}
-		
-		if (firstArray.length == secondArray.length)
-			for (int i=0; i<firstArray.length; i++) {
-				if (firstArray[i] != secondArray[i]) return false;
+			InputStream isFirst = new FileInputStream(first);
+			InputStream isSecond = new FileInputStream(second);
+			while ((isFirst.read(firstArray)) > 0 
+					&& (isSecond.read(secondArray) > 0)){
+				//if (firstArray.length == secondArray.length)
+					for (int i=0; i<firstArray.length; i++) {
+						if (firstArray[i] != secondArray[i]) return false;
+					}
+				//else return false;
 			}
-		else return false;
-		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 	
@@ -246,15 +222,17 @@ public class Finder extends SwingWorker<Integer, Object>{
 	 */
 	private void compareFiles() {
 		progress = 0;
+		//calculataAndPublishProgress(0, 0, "State 4 of 4: Find duplicate files! ");
 		long start = System.currentTimeMillis();
 		for (int i=0; i<fileArray.size(); i++) {
+			calculataAndPublishProgress(i, fileArray.size(), "State 4 of 4: Find duplicate files! ");
 			ArrayList<File> duplicateFileArray = new ArrayList<File>();		
 			for (int j=(i+1); j<fileArray.size(); j++) {
 				if (
 						(fileArray.get(i).getName().equals(fileArray.get(j).getName()))
 						&& (fileArray.get(i).length() == fileArray.get(j).length())
 						&& (!isAlreadyAdded(fileArray.get(i)))
-						//&& (compareContentFile(fileArray.get(i), fileArray.get(j)))
+						&& (compareContentFile(fileArray.get(i), fileArray.get(j)))
 						) {
 					if (!notFirst) {
 						duplicateFileArray.add(fileArray.get(i));
@@ -269,7 +247,6 @@ public class Finder extends SwingWorker<Integer, Object>{
 			if (duplicateFileArray.size()>0)
 				resultFilesArray.add(duplicateFileArray);
 			
-			calculataAndPublishProgress(i, fileArray.size(), "State 4 of 4: Find duplicate files! ");
 		}
 		System.out.println("2 "+(System.currentTimeMillis() - start));
 	}

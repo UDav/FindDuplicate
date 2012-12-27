@@ -1,14 +1,21 @@
 package com.udav.findduplicate;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.beans.PropertyChangeListener;
 
+import javax.swing.Action;
 import javax.swing.ButtonGroup;
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -30,6 +37,7 @@ public class SettingsDialog extends JDialog {
 	private JCheckBox chckbxVideo;
 	private JCheckBox chckbxPictures;
 	private JCheckBox chckbxOther;
+	private JCheckBox chckbxAudio;
 	
 	private String extensions;
 	
@@ -71,35 +79,84 @@ public class SettingsDialog extends JDialog {
 		  rdbtnSearchFileOnly.addActionListener(myListener);
 		
 		{
-			chckbxDocuments = new JCheckBox("documents(doc;xls;txt)");
+			chckbxDocuments = new JCheckBox("documents(doc;xls;txt;...)");
 			chckbxDocuments.setHorizontalAlignment(SwingConstants.LEFT);
-			chckbxDocuments.setBounds(15, 49, 189, 23);
+			chckbxDocuments.setBounds(15, 49, 232, 23);
 			chckbxDocuments.setEnabled(false);
 			contentPanel.add(chckbxDocuments);
 		}
 		{
-			chckbxVideo = new JCheckBox("video files(avi;mov;mkv)");
-			chckbxVideo.setBounds(15, 72, 189, 23);
+			chckbxVideo = new JCheckBox("video files(avi;mov;mkv;...)");
+			chckbxVideo.setBounds(15, 72, 232, 23);
 			chckbxVideo.setEnabled(false);
 			contentPanel.add(chckbxVideo);
 		}
+		
+		chckbxAudio = new JCheckBox("audio files(mp3;flac;acc;...)");
+		chckbxAudio.setEnabled(false);
+		chckbxAudio.setBounds(15, 95, 232, 23);
+		contentPanel.add(chckbxAudio);
 		{
-			chckbxPictures = new JCheckBox("pictures(jpg;gif;bmp;png)");
-			chckbxPictures.setBounds(15, 95, 189, 23);
+			chckbxPictures = new JCheckBox("pictures(jpg;gif;bmp;png;...)");
+			chckbxPictures.setBounds(15, 118, 232, 23);
 			chckbxPictures.setEnabled(false);
 			contentPanel.add(chckbxPictures);
 		}
 		{
-			chckbxOther = new JCheckBox("Other");
+			chckbxOther = new JCheckBox();
 			chckbxOther.setHorizontalAlignment(SwingConstants.LEFT);
-			chckbxOther.setBounds(15, 118, 189, 23);
+			chckbxOther.setBounds(15, 141, 232, 23);
 			chckbxOther.setEnabled(false);
+			chckbxOther.setAction(new Action() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (chckbxOther.isSelected())
+						textFieldExtensions.setEnabled(true);
+					else textFieldExtensions.setEnabled(false);
+				}
+				
+				@Override
+				public void setEnabled(boolean arg0) {}
+				
+				@Override
+				public void removePropertyChangeListener(PropertyChangeListener arg0) {}
+
+				@Override
+				public void putValue(String arg0, Object arg1) {}
+				
+				@Override
+				public boolean isEnabled() {
+					return false;
+				}
+				
+				@Override
+				public Object getValue(String arg0) {
+					return null;
+				}
+				
+				@Override
+				public void addPropertyChangeListener(PropertyChangeListener arg0) {}
+			});
+			chckbxOther.setText("Other");
 			contentPanel.add(chckbxOther);
 		}
 		{
 			textFieldExtensions = new JTextField();
-			textFieldExtensions.setBounds(204, 121, 233, 20);
+			textFieldExtensions.setBounds(259, 141, 178, 20);
 			textFieldExtensions.setEnabled(false);
+			textFieldExtensions.addKeyListener(new KeyListener() {
+				
+				@Override
+				public void keyTyped(KeyEvent e) {
+					e.getKeyChar();					
+				}
+				
+				@Override
+				public void keyReleased(KeyEvent arg0) {}
+				
+				@Override
+				public void keyPressed(KeyEvent arg0) {}
+			});
 			contentPanel.add(textFieldExtensions);
 			textFieldExtensions.setColumns(10);
 		}
@@ -122,7 +179,7 @@ public class SettingsDialog extends JDialog {
 						}
 						if (chckbxPictures.isSelected()){
 							extensions = addSemicolon(extensions);
-							extensions += "jpg;png;bmp";
+							extensions += "jpg;png;bmp;gif;jpeg";
 						}
 						if (chckbxVideo.isSelected()){
 							extensions = addSemicolon(extensions);
@@ -132,6 +189,10 @@ public class SettingsDialog extends JDialog {
 						if (chckbxOther.isSelected()){
 							extensions = addSemicolon(extensions);
 							extensions += textFieldExtensions.getText();
+						}
+						if (chckbxAudio.isSelected()){
+							extensions = addSemicolon(extensions);
+							extensions += "mp3;acc;flac";
 						}
 						System.out.println(extensions);
 						setVisible(false);
@@ -173,17 +234,35 @@ public class SettingsDialog extends JDialog {
 		chckbxVideo.setEnabled(enable);
 		chckbxPictures.setEnabled(enable);
 		chckbxOther.setEnabled(enable);
-		textFieldExtensions.setEnabled(enable);
+		chckbxAudio.setEnabled(enable);
+		if (chckbxOther.isSelected()) textFieldExtensions.setEnabled(enable);
 	}
 	
 	class RadioListener implements ActionListener {
 		 public void actionPerformed(ActionEvent e){
 			 if (e.getSource() == rdbtnSearchAllFiles) {
 				 changeEnabledComponent(false);
+				 extensions = "*";
 			 } else {
 				 changeEnabledComponent(true);
 			 }
 		 }
 	 }
+	
+	public class NumericVerifier extends InputVerifier {
+        @Override   
+        public boolean verify(JComponent input) {
+        	//Check type of the control
+        	String text = "";
+            if(input instanceof JTextField) {   
+            	JTextField tf = (JTextField) input; 
+            	text = tf.getText().trim(); 
+            }
+            boolean matches = text.matches(".[a-z][0-9]");
+            input.setBackground( ( matches ) ? Color.WHITE :  Color.RED);
+            
+            return matches; 
+        }
 
+}
 }

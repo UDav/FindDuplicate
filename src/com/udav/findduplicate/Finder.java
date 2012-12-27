@@ -35,7 +35,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 		int currentProgress = (int)(((float)(currenPos+1)/(float)arraySize)*100);
 		if (currentProgress > progress){
 			progress = currentProgress;
-			publish(note, progress);
+			publish(note);
 			setProgress(progress);
 		}
 	}
@@ -170,9 +170,11 @@ public class Finder extends SwingWorker<Integer, Object>{
 					if (!notFirst) {
 						duplicateDirectory.add(directoryArray.get(i));
 						duplicateDirectory.add(directoryArray.get(j));
+						directoryArray.remove(j); j--;
 						notFirst = true;
 					} else {
 						duplicateDirectory.add(directoryArray.get(j));
+						directoryArray.remove(j); j--;
 					}
 				}
 			}
@@ -237,9 +239,11 @@ public class Finder extends SwingWorker<Integer, Object>{
 					if (!notFirst) {
 						duplicateFileArray.add(fileArray.get(i));
 						duplicateFileArray.add(fileArray.get(j));
+						fileArray.remove(j); j--;
 						notFirst = true;
 					} else {
 						duplicateFileArray.add(fileArray.get(j));
+						fileArray.remove(j); j--;
 					}
 				}
 			}

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import javax.swing.SwingWorker;
 
+
+
 public class Finder extends SwingWorker<Integer, Object>{
 	
 	private ArrayList<File> fileArray = new ArrayList<File>();
@@ -52,6 +54,10 @@ public class Finder extends SwingWorker<Integer, Object>{
 				if (extensions[0].equals("*")) {
 					// collect all files
 					fileArray.add(fileList[i]);
+					// collect img files
+					String splitFileName[] = fileList[i].getName().split("\\.");
+					if ((splitFileName.length > 1) && (splitFileName[1].equalsIgnoreCase("jpg")))
+						imgFileArr.add(fileList[i]);
 				} else {
 					// collect files where extension match
 					String splitFileName[] = fileList[i].getName().split("\\.");
@@ -253,6 +259,39 @@ public class Finder extends SwingWorker<Integer, Object>{
 			
 		}
 		System.out.println("2 "+(System.currentTimeMillis() - start));
+	}
+	
+	ArrayList<File> imgFileArr = new ArrayList<File>();
+	ArrayList<MyImage> imgArr = new ArrayList<MyImage>(); 
+	ArrayList<ArrayList<File>> resultImgArray = new ArrayList<ArrayList<File>>();
+	public void compareImg() {
+		for (int i=0; i<imgFileArr.size(); i++)
+			imgArr.add(new MyImage(imgFileArr.get(i).getAbsolutePath()));
+		for (int i=0; i<imgArr.size(); i++) {
+			MyImage outer = imgArr.get(i);
+			ArrayList<File> tmp = new ArrayList<File>();
+			for (int j=i+1; j<imgArr.size(); j++) {
+				MyImage inner = imgArr.get(j);
+				int distance = outer.compare(inner.getData());
+				if (distance < 220) {
+					if (tmp.size() == 0) {
+						tmp.add(imgFileArr.get(i));
+						tmp.add(imgFileArr.get(j));
+						imgFileArr.remove(j);
+						imgArr.remove(j); j--;
+						
+					} else
+						tmp.add(imgFileArr.get(j));
+						imgFileArr.remove(j);
+						imgArr.remove(j); j--;
+				}
+			}
+			if (tmp.size() > 0) resultImgArray.add(tmp);
+		}
+	}
+	
+	public ArrayList<ArrayList<File>> getImgDuplicateArray() {
+		return resultImgArray;
 	}
 	
 	public ArrayList<ArrayList<File>> getFileDuplicateArray() {

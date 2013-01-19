@@ -2,16 +2,21 @@ package com.udav.findduplicate;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -29,6 +34,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JList;
 import javax.swing.border.LineBorder;
+
+import org.imgscalr.Scalr;
+
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -49,9 +57,12 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
 	private ArrayList<DirectoriesDuplicateContainer> directoriesDuplicateArray;
 	private ArrayList<ArrayList<JCheckBox>> directoriesCheckBoxArray;
 	
+	private ArrayList<ArrayList<File>> imgDuplicateArray;
+	
 	private String statistic;
 	private JScrollPane filesSP;
 	private JScrollPane directoriesSP;
+	private JScrollPane imgSP;
 
 	private JPanel directoriesPanel;
     private JPanel filesPanel; 
@@ -127,6 +138,10 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         filesSP.setVisible(true);
         middlePanel.addTab("Files", null, filesSP, null);
                 
+        imgSP = new JScrollPane();
+        imgSP.setVisible(true);
+        middlePanel.addTab("Img", null, imgSP, null);
+        
         statisticPanel = new JPanel();
         statisticPanel.setVisible(true);
         middlePanel.addTab("Statistic", null, statisticPanel, null);
@@ -263,8 +278,37 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         	fileCheckBoxArray.add(tmpCheckBoxArray);
         	filesPanel.add(tmpPanel);
         }
+        
+        JPanel imgPanel = new JPanel();
+        imgPanel.setLayout(new BoxLayout(imgPanel, BoxLayout.PAGE_AXIS));
+        imgPanel.setVisible(true);
+        for (int i=0; i<imgDuplicateArray.size(); i++){
+        	JPanel tmpPanel = new JPanel();
+        	ArrayList<File> tmp = imgDuplicateArray.get(i);
+        	for (int j=0; j<tmp.size(); j++) {
+        		BufferedImage image = null;
+				try {
+					image = ImageIO.read(tmp.get(j));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				image = Scalr.resize(image, 300, Scalr.OP_ANTIALIAS);
+				
+        		JLabel picLabel = new JLabel(new ImageIcon(image));
+				
+				
+	        	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+	        	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.LINE_AXIS));
+	        	tmpPanel.add(picLabel);
+				
+        	}
+        	imgPanel.add(tmpPanel);
+        }
+        imgSP.add(imgPanel);
+		imgSP.setViewportView(imgPanel);
+
         middlePanel.revalidate();
-        //middlePanel.setViewportView(tabPanel);
+        
 	}
 	
 	/**
@@ -389,6 +433,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     			protected void done() {
     				fileDuplicateArray = this.getFileDuplicateArray();
     				directoriesDuplicateArray = this.getDirectoriesDuplicateArray();
+    				imgDuplicateArray = this.getImgDuplicateArray();
     				statistic = this.getStatistic();
     				statisticPanel.removeAll();
     				statisticPanel.add(new JLabel(statistic));

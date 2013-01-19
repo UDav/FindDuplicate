@@ -2,7 +2,6 @@ package com.udav.findduplicate;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -261,9 +260,9 @@ public class Finder extends SwingWorker<Integer, Object>{
 		System.out.println("2 "+(System.currentTimeMillis() - start));
 	}
 	
-	ArrayList<File> imgFileArr = new ArrayList<File>();
-	ArrayList<MyImage> imgArr = new ArrayList<MyImage>(); 
-	ArrayList<ArrayList<File>> resultImgArray = new ArrayList<ArrayList<File>>();
+	private ArrayList<File> imgFileArr = new ArrayList<File>();
+	private ArrayList<MyImage> imgArr = new ArrayList<MyImage>(); 
+	private ArrayList<ArrayList<File>> resultImgArray = new ArrayList<ArrayList<File>>();
 	public void compareImg() {
 		for (int i=0; i<imgFileArr.size(); i++)
 			imgArr.add(new MyImage(imgFileArr.get(i).getAbsolutePath()));
@@ -332,6 +331,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 
 		compareFiles();	
 		
+		compareImg();
 		// Output duplicates files
 		/*		for (int i=0; i<resultArray.size(); i++) {
 					for (int j=0; j<resultArray.get(i).size(); j++) {

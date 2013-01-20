@@ -2,6 +2,7 @@ package com.udav.findduplicate;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -158,12 +159,12 @@ public class Finder extends SwingWorker<Integer, Object>{
 		// create array and fill him directories size
 		ArrayList<Long> sizes = new ArrayList<Long>();
 		for (int i=0; i<directoryArray.size(); i++) {
-			calculataAndPublishProgress(i, directoryArray.size(), "State 2 of 4: Calculate directories size! ");
+			calculataAndPublishProgress(i, directoryArray.size(), "State 2 of 6: Calculate directories size! ");
 			sizes.add(getDirectorySize(directoryArray.get(i).getAbsolutePath()));
 		}
 		progress = 0;
 		for (int i=0; i<directoryArray.size(); i++) {
-			calculataAndPublishProgress(i, directoryArray.size(), "State 3 of 4: Find duplicate directories! ");
+			calculataAndPublishProgress(i, directoryArray.size(), "State 3 of 6: Find duplicate directories! ");
 			ArrayList<File> duplicateDirectory = new ArrayList<File>();
 			for (int j=(i+1); j<directoryArray.size(); j++) {
 				if ( 
@@ -206,7 +207,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 		byte secondArray[] = new byte[size];
 
 		try{
-			InputStream isFirst = new FileInputStream(first);
+			InputStream isFirst  = new FileInputStream(first);
 			InputStream isSecond = new FileInputStream(second);
 			while ((isFirst.read(firstArray)) > 0 
 					&& (isSecond.read(secondArray) > 0)){
@@ -216,6 +217,8 @@ public class Finder extends SwingWorker<Integer, Object>{
 					}
 				//else return false;
 			}
+			if (isFirst != null) isFirst.close();
+			if (isSecond != null) isSecond.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -232,7 +235,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 		//calculataAndPublishProgress(0, 0, "State 4 of 4: Find duplicate files! ");
 		long start = System.currentTimeMillis();
 		for (int i=0; i<fileArray.size(); i++) {
-			calculataAndPublishProgress(i, fileArray.size(), "State 4 of 4: Find duplicate files! ");
+			calculataAndPublishProgress(i, fileArray.size(), "State 4 of 6: Find duplicate files! ");
 			ArrayList<File> duplicateFileArray = new ArrayList<File>();		
 			for (int j=(i+1); j<fileArray.size(); j++) {
 				if (
@@ -263,10 +266,20 @@ public class Finder extends SwingWorker<Integer, Object>{
 	private ArrayList<File> imgFileArr = new ArrayList<File>();
 	private ArrayList<MyImage> imgArr = new ArrayList<MyImage>(); 
 	private ArrayList<ArrayList<File>> resultImgArray = new ArrayList<ArrayList<File>>();
+	/**
+	 * Compare all images in array imgFileArr
+	 * result put array resulImageArray
+	 */
 	public void compareImg() {
-		for (int i=0; i<imgFileArr.size(); i++)
+		progress = 0;
+		long start = System.currentTimeMillis();
+		for (int i=0; i<imgFileArr.size(); i++){
+			calculataAndPublishProgress(i, imgFileArr.size(), "State 5 of 6: load and resize images! ");
 			imgArr.add(new MyImage(imgFileArr.get(i).getAbsolutePath()));
+		}
+		progress = 0;
 		for (int i=0; i<imgArr.size(); i++) {
+			calculataAndPublishProgress(i, imgArr.size(), "State 6 of 6: Find similar images! ");
 			MyImage outer = imgArr.get(i);
 			ArrayList<File> tmp = new ArrayList<File>();
 			for (int j=i+1; j<imgArr.size(); j++) {
@@ -287,6 +300,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 			}
 			if (tmp.size() > 0) resultImgArray.add(tmp);
 		}
+		System.out.println("3 "+(System.currentTimeMillis() - start));
 	}
 	
 	public ArrayList<ArrayList<File>> getImgDuplicateArray() {
@@ -321,7 +335,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 	
 	@Override
 	protected Integer doInBackground() throws Exception {
-		publish("State 1 of 4: Collect files and directories! ");
+		publish("State 1 of 6: Collect files and directories! ");
 
 		for (int i=0; i<pathArray.length; i++){
 			find(pathArray[i]);

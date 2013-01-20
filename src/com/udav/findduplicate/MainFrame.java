@@ -240,6 +240,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         filesPanel.setLayout(new BoxLayout(filesPanel, BoxLayout.PAGE_AXIS));
         filesPanel.setVisible(true);
         
+        //display directories duplicate
         directoriesCheckBoxArray = new ArrayList<ArrayList<JCheckBox>>();
         for (int i=0; i<directoriesDuplicateArray.size(); i++) {
         	ArrayList<File> subArray = directoriesDuplicateArray.get(i).getDuplicateArray();
@@ -260,6 +261,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         	directoriesPanel.add(tmpPanel);
         }
         
+        //display duplicate file
         fileCheckBoxArray = new ArrayList<ArrayList<JCheckBox>>();
         for (int i=0; i<fileDuplicateArray.size(); i++) {
         	ArrayList<File> subArray = fileDuplicateArray.get(i);
@@ -279,6 +281,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         	filesPanel.add(tmpPanel);
         }
         
+        //display image
         JPanel imgPanel = new JPanel();
         imgPanel.setLayout(new BoxLayout(imgPanel, BoxLayout.PAGE_AXIS));
         imgPanel.setVisible(true);
@@ -295,7 +298,6 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
 				image = Scalr.resize(image, 300, Scalr.OP_ANTIALIAS);
 				
         		JLabel picLabel = new JLabel(new ImageIcon(image));
-				
 				
 	        	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 	        	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.LINE_AXIS));
@@ -459,7 +461,6 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     		find.execute();
     	}
     	if (event.getSource() == deleteButton) {
-    		// удаляем 
     		deleteSelectedDuplicate();
     	}
     	if (event.getSource() == exitButton){

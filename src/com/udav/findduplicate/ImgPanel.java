@@ -15,15 +15,13 @@ import javax.swing.JPanel;
 
 import org.imgscalr.Scalr;
 
-import sun.dc.pr.PathFiller;
-
 public class ImgPanel extends JPanel {
 	private JLabel imgLabel;
 	private JLabel pathLabel;
 	
-	public ImgPanel(File file) {
+	public ImgPanel(final File file) {
 		this.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-    	this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+    	this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		this.setVisible(true);
     	
 		BufferedImage image = null;
@@ -32,10 +30,10 @@ public class ImgPanel extends JPanel {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		image = Scalr.resize(image, 300, Scalr.OP_ANTIALIAS);
+		image = Scalr.resize(image, 150, Scalr.OP_ANTIALIAS);
 		
 		imgLabel = new JLabel(new ImageIcon(image));
-		pathLabel = new JLabel(file.getAbsolutePath());
+		pathLabel = new JLabel(file.getName());
 		
 		this.add(imgLabel);
 		this.add(pathLabel);
@@ -68,7 +66,8 @@ public class ImgPanel extends JPanel {
 		
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			System.out.println("asd");
+			new ImgFrame(file);
+			System.out.println(file.getName());
 			
 		}
 	});

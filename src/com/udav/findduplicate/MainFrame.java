@@ -2,7 +2,6 @@ package com.udav.findduplicate;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -34,9 +32,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JList;
 import javax.swing.border.LineBorder;
-
 import org.imgscalr.Scalr;
-
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -58,6 +54,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
 	private ArrayList<ArrayList<JCheckBox>> directoriesCheckBoxArray;
 	
 	private ArrayList<ArrayList<File>> imgDuplicateArray;
+	private ArrayList<JLabel> imgLabelArray;
 	
 	private String statistic;
 	private JScrollPane filesSP;
@@ -281,7 +278,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         	filesPanel.add(tmpPanel);
         }
         
-        //display image
+        //display images
         JPanel imgPanel = new JPanel();
         imgPanel.setLayout(new BoxLayout(imgPanel, BoxLayout.PAGE_AXIS));
         imgPanel.setVisible(true);
@@ -289,7 +286,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         	JPanel tmpPanel = new JPanel();
         	ArrayList<File> tmp = imgDuplicateArray.get(i);
         	for (int j=0; j<tmp.size(); j++) {
-        		BufferedImage image = null;
+        		/*BufferedImage image = null;
 				try {
 					image = ImageIO.read(tmp.get(j));
 				} catch (IOException e) {
@@ -297,11 +294,18 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
 				}
 				image = Scalr.resize(image, 300, Scalr.OP_ANTIALIAS);
 				
+				ImgPanel panel = new ImgPanel(tmp.get(j));
+				panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         		JLabel picLabel = new JLabel(new ImageIcon(image));
-				
+        		JLabel pathLabel = new JLabel(tmp.get(j).getAbsolutePath());
+        		
+        		panel.add(picLabel);
+        		panel.add(pathLabel);
+				*/
+        		ImgPanel panel = new ImgPanel(tmp.get(j));
 	        	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 	        	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.LINE_AXIS));
-	        	tmpPanel.add(picLabel);
+	        	tmpPanel.add(panel);
 				
         	}
         	imgPanel.add(tmpPanel);
@@ -373,7 +377,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		if (event.getSource() == selectPathButton) {
-    		// запускать файлчузер
+    		// launch filechooser
     		JFileChooser choosFolder = new JFileChooser();
         	choosFolder.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			int ret = choosFolder.showDialog(null, "Select");				
@@ -412,7 +416,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     	}
     	
     	if (event.getSource() == searchButton) {
-    		// запускаем поиск, сравнение файлов и вывод дубликатов
+    		// launch finder, compare files and directories, display duplicate
     		searchButton.setEnabled(false);
     		deleteButton.setEnabled(false);
     		middlePanel.setEnabled(false);

@@ -2,7 +2,6 @@ package com.udav.findduplicate;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -211,11 +210,9 @@ public class Finder extends SwingWorker<Integer, Object>{
 			InputStream isSecond = new FileInputStream(second);
 			while ((isFirst.read(firstArray)) > 0 
 					&& (isSecond.read(secondArray) > 0)){
-				//if (firstArray.length == secondArray.length)
-					for (int i=0; i<firstArray.length; i++) {
-						if (firstArray[i] != secondArray[i]) return false;
-					}
-				//else return false;
+				for (int i=0; i<firstArray.length; i++) {
+					if (firstArray[i] != secondArray[i]) return false;
+				}
 			}
 			if (isFirst != null) isFirst.close();
 			if (isSecond != null) isSecond.close();

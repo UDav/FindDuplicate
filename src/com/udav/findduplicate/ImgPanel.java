@@ -5,6 +5,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -19,21 +20,21 @@ public class ImgPanel extends JPanel {
 	private JLabel imgLabel;
 	private JLabel pathLabel;
 	
-	public ImgPanel(final File file) {
+	public ImgPanel(final ArrayList<File> fileArray, final int position) {
 		this.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
     	this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		this.setVisible(true);
     	
 		BufferedImage image = null;
 		try {
-			image = ImageIO.read(file);
+			image = ImageIO.read(fileArray.get(position));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		image = Scalr.resize(image, 150, Scalr.OP_ANTIALIAS);
 		
 		imgLabel = new JLabel(new ImageIcon(image));
-		pathLabel = new JLabel(file.getName());
+		pathLabel = new JLabel(fileArray.get(position).getName());
 		
 		this.add(imgLabel);
 		this.add(pathLabel);
@@ -66,9 +67,7 @@ public class ImgPanel extends JPanel {
 		
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			new ImgFrame(file);
-			System.out.println(file.getName());
-			
+			new ImgFrame(fileArray, position);
 		}
 	});
 	}

@@ -286,7 +286,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         	JPanel tmpPanel = new JPanel();
         	ArrayList<File> tmp = imgDuplicateArray.get(i);
         	for (int j=0; j<tmp.size(); j++) {
-        		ImgPanel panel = new ImgPanel(tmp.get(j));
+        		ImgPanel panel = new ImgPanel(tmp, j);
 	        	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 	        	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.LINE_AXIS));
 	        	tmpPanel.add(panel);

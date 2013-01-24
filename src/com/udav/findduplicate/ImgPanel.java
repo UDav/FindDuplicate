@@ -67,7 +67,7 @@ public class ImgPanel extends JPanel {
 		
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			new ImgFrame(fileArray, position);
+			FormManager.getFormManager().createImgFrame(fileArray, position);
 		}
 	});
 	}

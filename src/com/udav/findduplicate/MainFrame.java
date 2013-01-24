@@ -82,6 +82,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
 	 * Create the frame.
 	 */
 	public MainFrame() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Toolkit kit = Toolkit.getDefaultToolkit() ;
         Dimension screenSize = kit.getScreenSize() ;
         int x = screenSize.width;
@@ -246,7 +247,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.PAGE_AXIS));
         	if (subArray.size() > 0)
-        		tmpPanel.add(new JLabel("Directories duplicate "+(i+1)/*subArray.get(0).getName()*/+" "+byteToString(size)));
+        		tmpPanel.add(new JLabel("Directories duplicate "+(i+1)+" "+byteToString(size)));
         	ArrayList<JCheckBox> tmpCheckBoxArray = new ArrayList<JCheckBox>();
         	for (int j=0; j<subArray.size(); j++){
         		JCheckBox tmpJCheckBox = new JCheckBox(subArray.get(j).getAbsolutePath()); 
@@ -418,7 +419,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     		for (int i=0; i<listModel.size(); i++)
     			pathArray[i] = new File(listModel.get(i).toString());
     		
-    		Finder find = new Finder(pathArray, extensions){
+    		Finder find = new Finder(pathArray, extensions, Finder.SEARCH_IMG_DUP){
     			@Override
     			protected void done() {
     				fileDuplicateArray = this.getFileDuplicateArray();

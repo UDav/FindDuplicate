@@ -10,6 +10,14 @@ import javax.swing.SwingWorker;
 
 
 public class Finder extends SwingWorker<Integer, Object>{
+	public static final int SEARCH_ALL_DUP = 1;
+	public static final int SEARCH_DIR_DUP = 2;
+	public static final int SEARCH_FILE_DUP = 3;
+	public static final int SEARCH_IMG_DUP = 4;
+	public static final int SEARCH_DIR_AND_FILE_DUP = 5; 
+	public static final int SEARCH_DIR_AND_IMG_DUP = 6;
+	public static final int SEARCH_FILE_AND_IMG_DUP = 7;
+	private int searchMetod;
 	
 	private ArrayList<File> fileArray = new ArrayList<File>();
 	private ArrayList<File> directoryArray = new ArrayList<File>();
@@ -19,9 +27,10 @@ public class Finder extends SwingWorker<Integer, Object>{
 	private String extensions[];
 	private File pathArray[];
 
-	public Finder(File pathArray[], String extension) {
+	public Finder(File pathArray[], String extension, int searchMethod) {
 		this.pathArray = pathArray;
 		this.extensions = extension.split(";");
+		this.searchMetod = searchMethod;
 	}
 	
 	// global progress
@@ -338,11 +347,38 @@ public class Finder extends SwingWorker<Integer, Object>{
 			find(pathArray[i]);
 		}
 
-		compareDirectories();
-
+		/*compareDirectories();
 		compareFiles();	
+		compareImg();*/
 		
-		compareImg();
+		switch (searchMetod){
+		case SEARCH_ALL_DUP:
+			compareDirectories();
+			compareFiles();	
+			compareImg();
+			break;
+		case SEARCH_DIR_DUP:
+			compareDirectories();
+			break;
+		case SEARCH_FILE_DUP:
+			compareFiles();
+			break;
+		case SEARCH_IMG_DUP:
+			compareImg();
+			break;
+		case SEARCH_DIR_AND_FILE_DUP:
+			compareDirectories();
+			compareFiles();
+			break;
+		case SEARCH_DIR_AND_IMG_DUP:
+			compareDirectories();
+			compareImg();
+			break;
+		case SEARCH_FILE_AND_IMG_DUP:
+			compareFiles();
+			compareImg();
+			break;
+		}
 		// Output duplicates files
 		/*		for (int i=0; i<resultArray.size(); i++) {
 					for (int j=0; j<resultArray.get(i).size(); j++) {

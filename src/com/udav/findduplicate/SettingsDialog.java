@@ -46,7 +46,7 @@ public class SettingsDialog extends JDialog {
 	 */
 	public SettingsDialog() {
 		setResizable(false);
-		setModal(true);
+		//setModal(true);
 		Toolkit kit = Toolkit.getDefaultToolkit() ;
         Dimension screenSize = kit.getScreenSize() ;
         int x = screenSize.width;

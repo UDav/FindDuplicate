@@ -25,6 +25,7 @@ public class ImgFrame extends JDialog implements ActionListener{
 	private JLabel imgLabel = new JLabel(); 
 	private ArrayList<File> fileArray;
 	private int position;
+	private EventObserverManager eventObserverManager;
 	
 	private void drawImg(int pos, int width, int height) {
 		BufferedImage image = null;
@@ -40,7 +41,8 @@ public class ImgFrame extends JDialog implements ActionListener{
 		this.repaint();
 	}
 	
-	public ImgFrame(ArrayList<File> fileArray, int pos) {
+	public ImgFrame(ArrayList<File> fileArray, int pos, EventObserverManager eventObserverManager) {
+		this.eventObserverManager = eventObserverManager;
 		this.setModal(true);
 		this.position = pos;
 		this.setBounds(100, 100, 700, 600);
@@ -80,7 +82,6 @@ public class ImgFrame extends JDialog implements ActionListener{
 		
 		imgLabel.setVisible(true);
 		this.setVisible(true);
-		System.out.println("Frame create!");
 	}
 
 	@Override
@@ -95,7 +96,7 @@ public class ImgFrame extends JDialog implements ActionListener{
 			}
 		} else
 		if (e.getSource() == buttonDelete) {
-			
+			eventObserverManager.notifyAll(ImgFrame.class, position);
 		}
 		
 	}

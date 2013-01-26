@@ -37,7 +37,7 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class MainFrame extends JFrame implements ActionListener, PropertyChangeListener{
+public class MainFrame extends JFrame implements ActionListener, PropertyChangeListener, EventObserver{
 	
 	private static final long serialVersionUID = 1L;
 	private JPanel topPanel;
@@ -81,7 +81,8 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
 	/**
 	 * Create the frame.
 	 */
-	public MainFrame() {
+	public MainFrame(final EventObserverManager eventObserverManager) {
+		eventObserverManager.registerEventObserver(ImgFrame.class, this);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Toolkit kit = Toolkit.getDefaultToolkit() ;
         Dimension screenSize = kit.getScreenSize() ;
@@ -455,6 +456,13 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     	if (event.getSource() == exitButton){
     		 System.exit(0);
     	}
+	}
+
+	@Override
+	public void event(int pos) {
+		
+		System.out.println("Picture with id "+pos+" deleted!");
+		
 	}
 
 }

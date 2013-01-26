@@ -25,18 +25,11 @@ public class FormManager {
 	}
 	
 	public void createMainFrame() {
-		mainFrame = new MainFrame();
+		mainFrame = new MainFrame(Main.eventObserverManager);
 	}
 	
 	public void createImgFrame(final ArrayList<File> fileArray, final int pos) {
 		//запускать в отдельном потоке
-		imgFrame = new ImgFrame(fileArray, pos);		
-				
-		imgFrame.buttonDelete.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("press dell!");
-			}
-		});
+		imgFrame = new ImgFrame(fileArray, pos, Main.eventObserverManager);		
 	}
 }

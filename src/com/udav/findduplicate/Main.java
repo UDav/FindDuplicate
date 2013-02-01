@@ -10,7 +10,7 @@ public class Main {
 	public static void main(String[] args) {		
 		//MainFrame mf = new MainFrame();
 		eventObserverManager = new EventObserverManagerImpl();
-		FormManager.getFormManager().createMainFrame();
+		new MainFrame(Main.eventObserverManager);
 		//new Finder();
 
 	}

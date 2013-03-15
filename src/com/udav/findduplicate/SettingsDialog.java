@@ -23,6 +23,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.JLabel;
 
 public class SettingsDialog extends JDialog {
 
@@ -39,7 +40,12 @@ public class SettingsDialog extends JDialog {
 	private JCheckBox chckbxOther;
 	private JCheckBox chckbxAudio;
 	
+	private JCheckBox chckbxDupFile;
+	private JCheckBox chckbxDupDir;
+	private JCheckBox chckbxDupImg;
+	
 	private String extensions;
+	private int searchType;
 	
 	/**
 	 * Create the dialog.
@@ -51,7 +57,7 @@ public class SettingsDialog extends JDialog {
         Dimension screenSize = kit.getScreenSize() ;
         int x = screenSize.width;
         int y = screenSize.height;
-        setBounds(x/4, y/4, 450, 300);
+        setBounds(x/4, y/4, 450, 340);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -69,9 +75,9 @@ public class SettingsDialog extends JDialog {
 			contentPanel.add(rdbtnSearchAllFiles);
 		}
 		
-		ButtonGroup group = new ButtonGroup();
-		group.add(rdbtnSearchAllFiles);
-		group.add(rdbtnSearchFileOnly);
+		ButtonGroup extensionGroup = new ButtonGroup();
+		extensionGroup.add(rdbtnSearchAllFiles);
+		extensionGroup.add(rdbtnSearchFileOnly);
 		
 		 // Регистрируем обработчик событий для кнопок
 		  RadioListener myListener = new RadioListener();
@@ -161,6 +167,22 @@ public class SettingsDialog extends JDialog {
 			textFieldExtensions.setColumns(10);
 		}
 		
+		JLabel lblSearch = new JLabel("Search:");
+		lblSearch.setBounds(10, 167, 46, 14);
+		contentPanel.add(lblSearch);
+		
+		chckbxDupFile = new JCheckBox("duplicate files");
+		chckbxDupFile.setBounds(15, 181, 178, 23);
+		contentPanel.add(chckbxDupFile);
+		
+		chckbxDupDir = new JCheckBox("duplicate directories");
+		chckbxDupDir.setBounds(15, 203, 199, 23);
+		contentPanel.add(chckbxDupDir);
+		
+		chckbxDupImg = new JCheckBox("similar images");
+		chckbxDupImg.setBounds(15, 225, 178, 23);
+		contentPanel.add(chckbxDupImg);
+		
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -194,7 +216,27 @@ public class SettingsDialog extends JDialog {
 							extensions = addSemicolon(extensions);
 							extensions += "mp3;acc;flac";
 						}
-						System.out.println(extensions);
+						//System.out.println(extensions);
+						
+						if (chckbxDupDir.isSelected() && !chckbxDupFile.isSelected() && !chckbxDupImg.isSelected()) {
+							searchType = Finder.SEARCH_DIR_DUP;
+						} else
+						if (!chckbxDupDir.isSelected() && chckbxDupFile.isSelected() && !chckbxDupImg.isSelected()) {
+							searchType = Finder.SEARCH_FILE_DUP;
+						} else 
+						if (!chckbxDupDir.isSelected() && !chckbxDupFile.isSelected() && chckbxDupImg.isSelected()) {
+							searchType = Finder.SEARCH_IMG_DUP;
+						} else
+						if (chckbxDupDir.isSelected() && chckbxDupFile.isSelected() && !chckbxDupImg.isSelected()) {
+							searchType = Finder.SEARCH_DIR_AND_FILE_DUP;
+						} else
+						if (!chckbxDupDir.isSelected() && chckbxDupFile.isSelected() && chckbxDupImg.isSelected()) {
+							searchType = Finder.SEARCH_FILE_AND_IMG_DUP;
+						} else
+						if (chckbxDupDir.isSelected() && !chckbxDupFile.isSelected() && chckbxDupImg.isSelected()) {
+							searchType = Finder.SEARCH_DIR_AND_IMG_DUP;
+						} else
+							searchType = Finder.SEARCH_ALL_DUP;
 						setVisible(false);
 					}
 				});
@@ -229,6 +271,10 @@ public class SettingsDialog extends JDialog {
 		return extensions;
 	}
 	
+	public int getSearchType(){
+		return searchType;
+	}
+	
 	private void changeEnabledComponent(boolean enable){
 		chckbxDocuments.setEnabled(enable);
 		chckbxVideo.setEnabled(enable);
@@ -249,7 +295,7 @@ public class SettingsDialog extends JDialog {
 		 }
 	 }
 	
-	public class NumericVerifier extends InputVerifier {
+	public class ExtensionVerifier extends InputVerifier {
         @Override   
         public boolean verify(JComponent input) {
         	//Check type of the control

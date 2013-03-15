@@ -413,14 +413,19 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     			filesPanel.removeAll();
     		}
     		String extensions = "";
-    		if (settingsDialog != null) extensions = settingsDialog.getExtensions();
+    		int searchType;
+    		if (settingsDialog != null) {
+    			extensions = settingsDialog.getExtensions();
+    			searchType = settingsDialog.getSearchType();
+    		} else
+    			searchType = Finder.SEARCH_ALL_DUP;
     		if (extensions.equals("")) extensions = "*";
     		
     		File pathArray[] = new File[listModel.size()];
     		for (int i=0; i<listModel.size(); i++)
     			pathArray[i] = new File(listModel.get(i).toString());
     		
-    		Finder find = new Finder(pathArray, extensions, Finder.SEARCH_IMG_DUP){
+    		Finder find = new Finder(pathArray, extensions, searchType){
     			@Override
     			protected void done() {
     				fileDuplicateArray = this.getFileDuplicateArray();

@@ -17,7 +17,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 	public static final int SEARCH_DIR_AND_FILE_DUP = 5; 
 	public static final int SEARCH_DIR_AND_IMG_DUP = 6;
 	public static final int SEARCH_FILE_AND_IMG_DUP = 7;
-	private int searchMetod;
+	private int searchMethod;
 	
 	private ArrayList<File> fileArray = new ArrayList<File>();
 	private ArrayList<File> directoryArray = new ArrayList<File>();
@@ -30,7 +30,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 	public Finder(File pathArray[], String extension, int searchMethod) {
 		this.pathArray = pathArray;
 		this.extensions = extension.split(";");
-		this.searchMetod = searchMethod;
+		this.searchMethod = searchMethod;
 	}
 	
 	// global progress
@@ -63,9 +63,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 					// collect all files
 					fileArray.add(fileList[i]);
 					// collect img files
-					String splitFileName[] = fileList[i].getName().split("\\.");
-					if ((splitFileName.length > 1) && (splitFileName[1].equalsIgnoreCase("jpg")))
-						imgFileArr.add(fileList[i]);
+					if (fileList[i].getName().endsWith("jpg"))imgFileArr.add(fileList[i]);
 				} else {
 					// collect files where extension match
 					String splitFileName[] = fileList[i].getName().split("\\.");
@@ -351,7 +349,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 		compareFiles();	
 		compareImg();*/
 		
-		switch (searchMetod){
+		switch (searchMethod){
 		case SEARCH_ALL_DUP:
 			compareDirectories();
 			compareFiles();	

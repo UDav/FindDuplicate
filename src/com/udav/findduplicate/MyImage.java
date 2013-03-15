@@ -23,15 +23,15 @@ public class MyImage {
 		load();
 	}	
 	
+	/**
+	 * Load image
+	 */
 	public void load(){
 		try {
 			BufferedImage img = ImageIO.read(new File(path));
-			
 			if (img != null)
 				img = Scalr.resize(img, Mode.FIT_EXACT, 20, 20, Scalr.OP_ANTIALIAS);
 			else System.out.println("Can't open "+path);
-			//System.out.println( "Height "+img.getHeight()+
-			//"Width "+img.getWidth());
 			
 			data = new int[img.getWidth()][img.getHeight()];
 			

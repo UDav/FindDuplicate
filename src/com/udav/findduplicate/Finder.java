@@ -26,6 +26,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 	private boolean notFirst = false;
 	private String extensions[];
 	private File pathArray[];
+	public int st;
 
 	public Finder(File pathArray[], String extension, int searchMethod) {
 		this.pathArray = pathArray;
@@ -194,7 +195,8 @@ public class Finder extends SwingWorker<Integer, Object>{
 			if (duplicateDirectory.size() > 0){
 				resultDirectoriesArray.add(new DirectoriesDuplicateContainer(duplicateDirectory, sizes.get(i)));
 			}
-			
+			st = 1;
+			publish("Finish search dup dir", "1");
 			
 		}
 		System.out.println("1 "+(System.currentTimeMillis() - start));
@@ -264,6 +266,8 @@ public class Finder extends SwingWorker<Integer, Object>{
 				resultFilesArray.add(duplicateFileArray);
 			
 		}
+		st = 2;
+		publish("Finish search dup files", "2");
 		System.out.println("2 "+(System.currentTimeMillis() - start));
 	}
 	
@@ -304,18 +308,20 @@ public class Finder extends SwingWorker<Integer, Object>{
 			}
 			if (tmp.size() > 0) resultImgArray.add(tmp);
 		}
+		st = 3;
+		publish("Finish search dup img", "3");
 		System.out.println("3 "+(System.currentTimeMillis() - start));
 	}
 	
-	public ArrayList<ArrayList<File>> getImgDuplicateArray() {
+	public synchronized ArrayList<ArrayList<File>> getImgDuplicateArray() {
 		return resultImgArray;
 	}
 	
-	public ArrayList<ArrayList<File>> getFileDuplicateArray() {
+	public synchronized ArrayList<ArrayList<File>> getFileDuplicateArray() {
 		return resultFilesArray;
 	}
 	
-	public ArrayList<DirectoriesDuplicateContainer> getDirectoriesDuplicateArray() {
+	public synchronized ArrayList<DirectoriesDuplicateContainer> getDirectoriesDuplicateArray() {
 		return resultDirectoriesArray;
 	}
 

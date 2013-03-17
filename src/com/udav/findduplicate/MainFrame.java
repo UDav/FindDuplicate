@@ -1,6 +1,7 @@
 package com.udav.findduplicate;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -79,7 +80,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     private JButton pathDel;
 	
 	/**
-	 * Create the frame.
+	 * Create frame.
 	 */
 	public MainFrame(final EventObserverManager eventObserverManager) {
 		eventObserverManager.registerEventObserver(ImgFrame.class, this);
@@ -223,23 +224,14 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
 		return "|| "+sizeInByte/MBYTE+"MB "+(sizeInByte%MBYTE)/KBYTE+"KB "+((sizeInByte%MBYTE)%KBYTE)+"B";
 	}
 	
-	/**
-	 * Display result in GUI
-	 */
-	private void fillMiddlePanel(){
+	private void displayDupDirictories() {
 		directoriesPanel = new JPanel();
 		directoriesSP.add(directoriesPanel);
 		directoriesSP.setViewportView(directoriesPanel);
         directoriesPanel.setLayout(new BoxLayout(directoriesPanel, BoxLayout.PAGE_AXIS));
         directoriesPanel.setVisible(true);
         
-        filesPanel = new JPanel();
-        filesSP.add(filesPanel);
-        filesSP.setViewportView(filesPanel);
-        filesPanel.setLayout(new BoxLayout(filesPanel, BoxLayout.PAGE_AXIS));
-        filesPanel.setVisible(true);
-        
-        //display directories duplicate
+      //display directories duplicate
         directoriesCheckBoxArray = new ArrayList<ArrayList<JCheckBox>>();
         for (int i=0; i<directoriesDuplicateArray.size(); i++) {
         	ArrayList<File> subArray = directoriesDuplicateArray.get(i).getDuplicateArray();
@@ -259,8 +251,17 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         	directoriesCheckBoxArray.add(tmpCheckBoxArray);
         	directoriesPanel.add(tmpPanel);
         }
+        middlePanel.revalidate();
+	}
+
+	private void displayDupFiles(){
+		filesPanel = new JPanel();
+        filesSP.add(filesPanel);
+        filesSP.setViewportView(filesPanel);
+        filesPanel.setLayout(new BoxLayout(filesPanel, BoxLayout.PAGE_AXIS));
+        filesPanel.setVisible(true);
         
-        //display duplicate file
+      //display duplicate file
         fileCheckBoxArray = new ArrayList<ArrayList<JCheckBox>>();
         for (int i=0; i<fileDuplicateArray.size(); i++) {
         	ArrayList<File> subArray = fileDuplicateArray.get(i);
@@ -279,16 +280,21 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         	fileCheckBoxArray.add(tmpCheckBoxArray);
         	filesPanel.add(tmpPanel);
         }
-        
-        //display images
+        middlePanel.revalidate();
+	}
+	
+	private void displayDupImage() {
+		//display images
         JPanel imgPanel = new JPanel();
         imgPanel.setLayout(new BoxLayout(imgPanel, BoxLayout.PAGE_AXIS));
+        imgPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         imgPanel.setVisible(true);
         for (int i=0; i<imgDuplicateArray.size(); i++){
         	JPanel tmpPanel = new JPanel();
         	ArrayList<File> tmp = imgDuplicateArray.get(i);
         	for (int j=0; j<tmp.size(); j++) {
         		ImgPanel panel = new ImgPanel(tmp, j);
+        		tmpPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 	        	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 	        	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.LINE_AXIS));
 	        	tmpPanel.add(panel);
@@ -300,9 +306,8 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
 		imgSP.setViewportView(imgPanel);
 
         middlePanel.revalidate();
-        
 	}
-	
+		
 	/**
 	 * Delete checked items
 	 */
@@ -436,7 +441,9 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     				statisticPanel.add(new JLabel(statistic));
     				statisticPanel.revalidate();
     				
-    				fillMiddlePanel();
+    				displayDupDirictories();
+    				displayDupFiles();
+    				displayDupImage();
     				searchButton.setEnabled(true);
     				deleteButton.setEnabled(true);
     				middlePanel.setEnabled(true);
@@ -449,6 +456,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     			@Override
     			protected void process(List<Object> chunks) {
     				status.setText(chunks.get(0).toString());
+    				//System.out.println(chunks.get(0).toString());
     				super.process(chunks);
     			}
     		};

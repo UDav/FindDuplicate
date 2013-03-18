@@ -31,7 +31,7 @@ public class MyImage {
 			BufferedImage img = ImageIO.read(new File(path));
 			if (img != null)
 				img = Scalr.resize(img, Mode.FIT_EXACT, 20, 20, Scalr.OP_ANTIALIAS);
-			else System.out.println("Can't open "+path);
+			else System.out.println("Can't open " + path);
 			
 			data = new int[img.getWidth()][img.getHeight()];
 			

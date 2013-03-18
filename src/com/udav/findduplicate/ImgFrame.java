@@ -12,6 +12,8 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+
 import org.imgscalr.Scalr;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
@@ -64,7 +66,7 @@ public class ImgFrame extends JDialog implements ActionListener{
 			public void componentHidden(ComponentEvent arg0) {}
 		});
 		getContentPane().add(imgPanel, BorderLayout.NORTH);
-				
+		
 		JPanel controlPanel = new JPanel();
 		getContentPane().add(controlPanel, BorderLayout.SOUTH);
 		
@@ -82,6 +84,7 @@ public class ImgFrame extends JDialog implements ActionListener{
 		
 		imgLabel.setVisible(true);
 		this.setVisible(true);
+		
 	}
 
 	@Override

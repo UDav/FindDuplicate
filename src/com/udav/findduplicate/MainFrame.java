@@ -3,6 +3,7 @@ package com.udav.findduplicate;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -132,10 +133,20 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         directoriesSP = new JScrollPane();
         directoriesSP.setVisible(true);
         middlePanel.addTab("Directories", null, directoriesSP, null);
+        middlePanel.setEnabledAt(0, false);
         
         filesSP = new JScrollPane();
         filesSP.setVisible(true);
         middlePanel.addTab("Files", null, filesSP, null);
+<<<<<<< HEAD
+=======
+        middlePanel.setEnabledAt(1, false);
+                
+        imgSP = new JScrollPane();
+        imgSP.setVisible(true);
+        middlePanel.addTab("Img", null, imgSP, null);
+        middlePanel.setEnabledAt(2, false);
+>>>>>>> 0b1d95e709f1649eb34da7865476e9aa41e02628
         
         statisticPanel = new JPanel();
         statisticPanel.setVisible(true);
@@ -380,7 +391,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     		// launch finder, compare files and directories, display duplicate
     		searchButton.setEnabled(false);
     		deleteButton.setEnabled(false);
-    		middlePanel.setEnabled(false);
+    		//middlePanel.setEnabled(false);
 
     		progressBar.setIndeterminate(true);
     		if ((directoriesPanel != null) || (filesPanel != null)) {
@@ -403,16 +414,28 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     		Finder find = new Finder(pathArray, extensions, searchType){
     			@Override
     			protected void done() {
-    				fileDuplicateArray = this.getFileDuplicateArray();
-    				directoriesDuplicateArray = this.getDirectoriesDuplicateArray();
-    				imgDuplicateArray = this.getImgDuplicateArray();
     				statistic = this.getStatistic();
     				statisticPanel.removeAll();
     				statisticPanel.add(new JLabel(statistic));
     				statisticPanel.revalidate();
+
+    				directoriesDuplicateArray = this.getDirectoriesDuplicateArray();
+					displayDupDirictories();
+					middlePanel.setEnabledAt(0, true);
     				
+<<<<<<< HEAD
     				displayDupDirictories();
     				displayDupFiles();
+=======
+					fileDuplicateArray = this.getFileDuplicateArray();
+					displayDupFiles();
+					middlePanel.setEnabledAt(1, true);
+					
+					imgDuplicateArray = this.getImgDuplicateArray();
+					displayDupImage();
+					middlePanel.setEnabledAt(2, true);
+					
+>>>>>>> 0b1d95e709f1649eb34da7865476e9aa41e02628
     				searchButton.setEnabled(true);
     				deleteButton.setEnabled(true);
     				middlePanel.setEnabled(true);
@@ -426,6 +449,27 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     			protected void process(List<Object> chunks) {
     				status.setText(chunks.get(0).toString());
     				//System.out.println(chunks.get(0).toString());
+    				/*if (chunks.size() > 1){
+    					int stat = Integer.parseInt(chunks.get(1).toString());
+    					switch (stat){
+    						case 1:
+    							directoriesDuplicateArray = this.getDirectoriesDuplicateArray();
+    							displayDupDirictories();
+    							middlePanel.setEnabledAt(0, true);
+    							break;
+    						case 2:
+    							fileDuplicateArray = this.getFileDuplicateArray();
+    	    					displayDupFiles();
+    	    					middlePanel.setEnabledAt(1, true);
+    	    					break;
+    						case 3:
+    							imgDuplicateArray = this.getImgDuplicateArray();
+    							displayDupImage();
+    							middlePanel.setEnabledAt(2, true);
+    							break;
+    					}
+    					
+    				}*/
     				super.process(chunks);
     			}
     		};

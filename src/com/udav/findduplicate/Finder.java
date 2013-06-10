@@ -60,18 +60,17 @@ public class Finder extends SwingWorker<Integer, Object>{
 		File fileList[] = f.listFiles();
 		for (int i=0; i<fileList.length; i++) {
 			if ( (fileList[i].isFile()) && (fileList[i].canRead()) && (!fileList[i].isHidden()) ) {
+				// collect img files
+				if (fileList[i].getName().toLowerCase().endsWith("jpg"))imgFileArr.add(fileList[i]);
+				// collect files
 				if (extensions[0].equals("*")) {
 					// collect all files
 					fileArray.add(fileList[i]);
-					// collect img files
-					if (fileList[i].getName().endsWith("jpg"))imgFileArr.add(fileList[i]);
 				} else {
 					// collect files where extension match
-					String splitFileName[] = fileList[i].getName().split("\\.");
-					String fileExtension = ""; 
-					if (splitFileName.length > 1) fileExtension = splitFileName[1];
+					fileList[i].getName().toLowerCase().endsWith("");
 					for (int j=0; j<extensions.length; j++) {
-						if (fileExtension.equalsIgnoreCase(extensions[j])) {
+						if (fileList[i].getName().toLowerCase().endsWith(extensions[j])) {
 							fileArray.add(fileList[i]);
 						}
 					}
@@ -195,10 +194,9 @@ public class Finder extends SwingWorker<Integer, Object>{
 			if (duplicateDirectory.size() > 0){
 				resultDirectoriesArray.add(new DirectoriesDuplicateContainer(duplicateDirectory, sizes.get(i)));
 			}
-			st = 1;
-			publish("Finish search dup dir", "1");
-			
 		}
+		st = 1;
+		publish("Finish search dup dir", "1");
 		System.out.println("1 "+(System.currentTimeMillis() - start));
 	}
 	
@@ -238,7 +236,6 @@ public class Finder extends SwingWorker<Integer, Object>{
 	 */
 	private void compareFiles() {
 		progress = 0;
-		//calculataAndPublishProgress(0, 0, "State 4 of 4: Find duplicate files! ");
 		long start = System.currentTimeMillis();
 		for (int i=0; i<fileArray.size(); i++) {
 			calculataAndPublishProgress(i, fileArray.size(), "State 4 of 5: Find duplicate files! ");
@@ -311,10 +308,6 @@ public class Finder extends SwingWorker<Integer, Object>{
 		for (int i=0; i<pathArray.length; i++){
 			find(pathArray[i]);
 		}
-
-		/*compareDirectories();
-		compareFiles();	
-		compareImg();*/
 		
 		switch (searchMethod){
 		case SEARCH_ALL_DUP:

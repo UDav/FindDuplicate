@@ -38,7 +38,7 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class MainFrame extends JFrame implements ActionListener, PropertyChangeListener, EventObserver{
+public class MainFrame extends JFrame implements ActionListener, PropertyChangeListener{
 	
 	private static final long serialVersionUID = 1L;
 	private JPanel topPanel;
@@ -82,8 +82,7 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
 	/**
 	 * Create frame.
 	 */
-	public MainFrame(final EventObserverManager eventObserverManager) {
-		eventObserverManager.registerEventObserver(ImgFrame.class, this);
+	public MainFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Toolkit kit = Toolkit.getDefaultToolkit() ;
         Dimension screenSize = kit.getScreenSize() ;
@@ -137,10 +136,6 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         filesSP = new JScrollPane();
         filesSP.setVisible(true);
         middlePanel.addTab("Files", null, filesSP, null);
-                
-        imgSP = new JScrollPane();
-        imgSP.setVisible(true);
-        middlePanel.addTab("Img", null, imgSP, null);
         
         statisticPanel = new JPanel();
         statisticPanel.setVisible(true);
@@ -282,31 +277,6 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         }
         middlePanel.revalidate();
 	}
-	
-	private void displayDupImage() {
-		//display images
-        JPanel imgPanel = new JPanel();
-        imgPanel.setLayout(new BoxLayout(imgPanel, BoxLayout.PAGE_AXIS));
-        imgPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-        imgPanel.setVisible(true);
-        for (int i=0; i<imgDuplicateArray.size(); i++){
-        	JPanel tmpPanel = new JPanel();
-        	ArrayList<File> tmp = imgDuplicateArray.get(i);
-        	for (int j=0; j<tmp.size(); j++) {
-        		ImgPanel panel = new ImgPanel(tmp, j);
-        		tmpPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-	        	tmpPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-	        	tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.LINE_AXIS));
-	        	tmpPanel.add(panel);
-				
-        	}
-        	imgPanel.add(tmpPanel);
-        }
-        imgSP.add(imgPanel);
-		imgSP.setViewportView(imgPanel);
-
-        middlePanel.revalidate();
-	}
 		
 	/**
 	 * Delete checked items
@@ -443,7 +413,6 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     				
     				displayDupDirictories();
     				displayDupFiles();
-    				displayDupImage();
     				searchButton.setEnabled(true);
     				deleteButton.setEnabled(true);
     				middlePanel.setEnabled(true);
@@ -469,13 +438,6 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
     	if (event.getSource() == exitButton){
     		 System.exit(0);
     	}
-	}
-
-	@Override
-	public void event(int pos) {
-		
-		System.out.println("Picture with id "+pos+" deleted!");
-		
 	}
 
 }

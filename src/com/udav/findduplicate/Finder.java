@@ -166,12 +166,12 @@ public class Finder extends SwingWorker<Integer, Object>{
 		// create array and fill him directories size
 		ArrayList<Long> sizes = new ArrayList<Long>();
 		for (int i=0; i<directoryArray.size(); i++) {
-			calculataAndPublishProgress(i, directoryArray.size(), "State 2 of 6: Calculate directories size! ");
+			calculataAndPublishProgress(i, directoryArray.size(), "State 2 of 5: Calculate directories size! ");
 			sizes.add(getDirectorySize(directoryArray.get(i).getAbsolutePath()));
 		}
 		progress = 0;
 		for (int i=0; i<directoryArray.size(); i++) {
-			calculataAndPublishProgress(i, directoryArray.size(), "State 3 of 6: Find duplicate directories! ");
+			calculataAndPublishProgress(i, directoryArray.size(), "State 3 of 5: Find duplicate directories! ");
 			ArrayList<File> duplicateDirectory = new ArrayList<File>();
 			for (int j=(i+1); j<directoryArray.size(); j++) {
 				if ( 
@@ -241,7 +241,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 		//calculataAndPublishProgress(0, 0, "State 4 of 4: Find duplicate files! ");
 		long start = System.currentTimeMillis();
 		for (int i=0; i<fileArray.size(); i++) {
-			calculataAndPublishProgress(i, fileArray.size(), "State 4 of 6: Find duplicate files! ");
+			calculataAndPublishProgress(i, fileArray.size(), "State 4 of 5: Find duplicate files! ");
 			ArrayList<File> duplicateFileArray = new ArrayList<File>();		
 			for (int j=(i+1); j<fileArray.size(); j++) {
 				if (
@@ -272,46 +272,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 	}
 	
 	private ArrayList<File> imgFileArr = new ArrayList<File>();
-	private ArrayList<MyImage> imgArr = new ArrayList<MyImage>(); 
 	private ArrayList<ArrayList<File>> resultImgArray = new ArrayList<ArrayList<File>>();
-	/**
-	 * Compare all images in array imgFileArr
-	 * result put array resulImageArray
-	 */
-	public void compareImg() {
-		progress = 0;
-		long start = System.currentTimeMillis();
-		for (int i=0; i<imgFileArr.size(); i++){
-			calculataAndPublishProgress(i, imgFileArr.size(), "State 5 of 6: load and resize images! ");
-			imgArr.add(new MyImage(imgFileArr.get(i).getAbsolutePath()));
-		}
-		progress = 0;
-		for (int i=0; i<imgArr.size(); i++) {
-			calculataAndPublishProgress(i, imgArr.size(), "State 6 of 6: Find similar images! ");
-			MyImage outer = imgArr.get(i);
-			ArrayList<File> tmp = new ArrayList<File>();
-			for (int j=i+1; j<imgArr.size(); j++) {
-				MyImage inner = imgArr.get(j);
-				int distance = outer.compare(inner.getData());
-				if (distance < 220) {
-					if (tmp.size() == 0) {
-						tmp.add(imgFileArr.get(i));
-						tmp.add(imgFileArr.get(j));
-						imgFileArr.remove(j);
-						imgArr.remove(j); j--;
-						
-					} else
-						tmp.add(imgFileArr.get(j));
-						imgFileArr.remove(j);
-						imgArr.remove(j); j--;
-				}
-			}
-			if (tmp.size() > 0) resultImgArray.add(tmp);
-		}
-		st = 3;
-		publish("Finish search dup img", "3");
-		System.out.println("3 "+(System.currentTimeMillis() - start));
-	}
 	
 	public synchronized ArrayList<ArrayList<File>> getImgDuplicateArray() {
 		return resultImgArray;
@@ -345,7 +306,7 @@ public class Finder extends SwingWorker<Integer, Object>{
 	
 	@Override
 	protected Integer doInBackground() throws Exception {
-		publish("State 1 of 6: Collect files and directories! ");
+		publish("State 1 of 5: Collect files and directories! ");
 
 		for (int i=0; i<pathArray.length; i++){
 			find(pathArray[i]);
@@ -359,7 +320,6 @@ public class Finder extends SwingWorker<Integer, Object>{
 		case SEARCH_ALL_DUP:
 			compareDirectories();
 			compareFiles();	
-			compareImg();
 			break;
 		case SEARCH_DIR_DUP:
 			compareDirectories();
@@ -367,20 +327,9 @@ public class Finder extends SwingWorker<Integer, Object>{
 		case SEARCH_FILE_DUP:
 			compareFiles();
 			break;
-		case SEARCH_IMG_DUP:
-			compareImg();
-			break;
 		case SEARCH_DIR_AND_FILE_DUP:
 			compareDirectories();
 			compareFiles();
-			break;
-		case SEARCH_DIR_AND_IMG_DUP:
-			compareDirectories();
-			compareImg();
-			break;
-		case SEARCH_FILE_AND_IMG_DUP:
-			compareFiles();
-			compareImg();
 			break;
 		}
 		// Output duplicates files

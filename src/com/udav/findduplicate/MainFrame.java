@@ -55,13 +55,9 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
 	private ArrayList<DirectoriesDuplicateContainer> directoriesDuplicateArray;
 	private ArrayList<ArrayList<JCheckBox>> directoriesCheckBoxArray;
 	
-	private ArrayList<ArrayList<File>> imgDuplicateArray;
-	private ArrayList<JLabel> imgLabelArray;
-	
 	private String statistic;
 	private JScrollPane filesSP;
 	private JScrollPane directoriesSP;
-	private JScrollPane imgSP;
 
 	private JPanel directoriesPanel;
     private JPanel filesPanel; 
@@ -138,15 +134,6 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         filesSP = new JScrollPane();
         filesSP.setVisible(true);
         middlePanel.addTab("Files", null, filesSP, null);
-<<<<<<< HEAD
-=======
-        middlePanel.setEnabledAt(1, false);
-                
-        imgSP = new JScrollPane();
-        imgSP.setVisible(true);
-        middlePanel.addTab("Img", null, imgSP, null);
-        middlePanel.setEnabledAt(2, false);
->>>>>>> 0b1d95e709f1649eb34da7865476e9aa41e02628
         
         statisticPanel = new JPanel();
         statisticPanel.setVisible(true);
@@ -423,19 +410,10 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
 					displayDupDirictories();
 					middlePanel.setEnabledAt(0, true);
     				
-<<<<<<< HEAD
-    				displayDupDirictories();
-    				displayDupFiles();
-=======
 					fileDuplicateArray = this.getFileDuplicateArray();
 					displayDupFiles();
 					middlePanel.setEnabledAt(1, true);
 					
-					imgDuplicateArray = this.getImgDuplicateArray();
-					displayDupImage();
-					middlePanel.setEnabledAt(2, true);
-					
->>>>>>> 0b1d95e709f1649eb34da7865476e9aa41e02628
     				searchButton.setEnabled(true);
     				deleteButton.setEnabled(true);
     				middlePanel.setEnabled(true);

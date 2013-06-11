@@ -13,10 +13,8 @@ public class Finder extends SwingWorker<Integer, Object>{
 	public static final int SEARCH_ALL_DUP = 1;
 	public static final int SEARCH_DIR_DUP = 2;
 	public static final int SEARCH_FILE_DUP = 3;
-	public static final int SEARCH_IMG_DUP = 4;
-	public static final int SEARCH_DIR_AND_FILE_DUP = 5; 
-	public static final int SEARCH_DIR_AND_IMG_DUP = 6;
-	public static final int SEARCH_FILE_AND_IMG_DUP = 7;
+	public static final int SEARCH_DIR_AND_FILE_DUP = 4; 
+
 	private int searchMethod;
 	
 	private ArrayList<File> fileArray = new ArrayList<File>();

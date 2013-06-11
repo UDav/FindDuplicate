@@ -42,7 +42,6 @@ public class SettingsDialog extends JDialog {
 	
 	private JCheckBox chckbxDupFile;
 	private JCheckBox chckbxDupDir;
-	private JCheckBox chckbxDupImg;
 	
 	private String extensions;
 	private int searchType;
@@ -57,7 +56,7 @@ public class SettingsDialog extends JDialog {
         Dimension screenSize = kit.getScreenSize() ;
         int x = screenSize.width;
         int y = screenSize.height;
-        setBounds(x/4, y/4, 450, 340);
+        setBounds(x/4, y/4, 450, 295);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -179,10 +178,6 @@ public class SettingsDialog extends JDialog {
 		chckbxDupDir.setBounds(15, 203, 199, 23);
 		contentPanel.add(chckbxDupDir);
 		
-		chckbxDupImg = new JCheckBox("similar images");
-		chckbxDupImg.setBounds(15, 225, 178, 23);
-		contentPanel.add(chckbxDupImg);
-		
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -218,23 +213,14 @@ public class SettingsDialog extends JDialog {
 						}
 						//System.out.println(extensions);
 						
-						if (chckbxDupDir.isSelected() && !chckbxDupFile.isSelected() && !chckbxDupImg.isSelected()) {
+						if (chckbxDupDir.isSelected() && !chckbxDupFile.isSelected()) {
 							searchType = Finder.SEARCH_DIR_DUP;
 						} else
-						if (!chckbxDupDir.isSelected() && chckbxDupFile.isSelected() && !chckbxDupImg.isSelected()) {
+						if (!chckbxDupDir.isSelected() && chckbxDupFile.isSelected() ) {
 							searchType = Finder.SEARCH_FILE_DUP;
 						} else 
-						if (!chckbxDupDir.isSelected() && !chckbxDupFile.isSelected() && chckbxDupImg.isSelected()) {
-							searchType = Finder.SEARCH_IMG_DUP;
-						} else
-						if (chckbxDupDir.isSelected() && chckbxDupFile.isSelected() && !chckbxDupImg.isSelected()) {
+						if (chckbxDupDir.isSelected() && chckbxDupFile.isSelected() ) {
 							searchType = Finder.SEARCH_DIR_AND_FILE_DUP;
-						} else
-						if (!chckbxDupDir.isSelected() && chckbxDupFile.isSelected() && chckbxDupImg.isSelected()) {
-							searchType = Finder.SEARCH_FILE_AND_IMG_DUP;
-						} else
-						if (chckbxDupDir.isSelected() && !chckbxDupFile.isSelected() && chckbxDupImg.isSelected()) {
-							searchType = Finder.SEARCH_DIR_AND_IMG_DUP;
 						} else
 							searchType = Finder.SEARCH_ALL_DUP;
 						setVisible(false);

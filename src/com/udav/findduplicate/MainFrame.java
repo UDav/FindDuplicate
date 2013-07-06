@@ -34,7 +34,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JList;
 import javax.swing.border.LineBorder;
-import org.imgscalr.Scalr;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -129,7 +128,6 @@ public class MainFrame extends JFrame implements ActionListener, PropertyChangeL
         directoriesSP = new JScrollPane();
         directoriesSP.setVisible(true);
         middlePanel.addTab("Directories", null, directoriesSP, null);
-        middlePanel.setEnabledAt(0, false);
         
         filesSP = new JScrollPane();
         filesSP.setVisible(true);
